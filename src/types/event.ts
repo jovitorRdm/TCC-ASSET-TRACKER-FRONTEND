@@ -1,6 +1,6 @@
 import { GenericStatus } from './genericStatus';
 
-export interface Discipline {
+export interface EventType {
     id?: string;
     status: GenericStatus;
     name: string;
