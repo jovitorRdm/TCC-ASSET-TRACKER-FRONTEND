@@ -1,7 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Layout, Space, Button, Menu, theme, Input, Select } from 'antd';
+import { Menu } from 'antd';
 import type { MenuProps } from 'antd';
 import {
   CalendarOutlined,
@@ -13,10 +12,7 @@ import {
   TeamOutlined,
   CarryOutOutlined,
   FileDoneOutlined,
-  PlusCircleOutlined,
 } from '@ant-design/icons';
-import { GenericStatus } from '@/types/genericStatus';
-import { eventService } from '@/services/event';
 import Sider from 'antd/es/layout/Sider';
 
 type MenuItem = Required<MenuProps>['items'][number];

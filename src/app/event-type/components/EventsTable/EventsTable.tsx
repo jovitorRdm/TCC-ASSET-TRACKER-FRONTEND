@@ -6,6 +6,7 @@ import { EditOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { Button, Modal, Table, Tooltip } from 'antd';
 import { ClientComponentLoader } from '@/components/ClientComponentLoader';
 import { StatusButton } from '@/components/StatusButton';
+import Pagination from 'antd/lib/pagination';
 
 interface EventTableProps {
   events: EventType[];
@@ -54,19 +55,25 @@ export const EventsTable: React.FC<EventTableProps> = ({ events, onEdit }) => {
     <ClientComponentLoader>
       <Table
         size="small"
-        rowKey="guid"
+        rowKey="id"
         pagination={false}
         columns={[
           {
-            title: 'Disciplina',
+            title: 'Evento',
             dataIndex: 'name',
             key: 'name',
             align: 'left',
           },
           {
+            title: 'Descrição',
+            dataIndex: 'description',
+            key: 'description',
+            align: 'left',
+          },
+          {
             dataIndex: 'actions',
             key: 'actions',
-            width: 150,
+            width: 200,
             align: 'right',
             render: (_, record) => (
               <>
@@ -93,7 +100,11 @@ export const EventsTable: React.FC<EventTableProps> = ({ events, onEdit }) => {
           },
         ]}
         dataSource={events}
-        expandable={{}}
+      />
+      <Pagination
+        style={{ padding: '25px', textAlign: 'center' }}
+        defaultCurrent={1}
+        total={50}
       />
     </ClientComponentLoader>
   );

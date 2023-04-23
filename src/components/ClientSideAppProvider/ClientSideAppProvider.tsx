@@ -30,8 +30,7 @@ export const ClientSideAppProvider: React.FC<{
       componentSize="large"
       theme={{
         token: {
-          colorPrimary: '#212330',
-          colorPrimaryBg: '#bec4d4',
+          colorPrimary: '#D6A07E',
           fontFamily: 'var(--font-family)',
         },
       }}
