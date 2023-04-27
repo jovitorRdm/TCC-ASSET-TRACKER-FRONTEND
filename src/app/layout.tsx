@@ -1,8 +1,10 @@
 import { ClientSideAppProvider } from '@/components/ClientSideAppProvider';
 import '../style/globals.css';
+import 'react-toastify/dist/ReactToastify.css';
+import { ClientComponentLoader } from '@/components/ClientComponentLoader';
 
 export const metadata = {
-  title: 'Events',
+  title: 'Tipos de Eventos',
 };
 
 export default async function RootLayout({
@@ -13,7 +15,9 @@ export default async function RootLayout({
   return (
     <html lang="pt-br">
       <body>
-        <ClientSideAppProvider>{children}</ClientSideAppProvider>
+        <ClientSideAppProvider>
+          <ClientComponentLoader>{children}</ClientComponentLoader>
+        </ClientSideAppProvider>
       </body>
     </html>
   );

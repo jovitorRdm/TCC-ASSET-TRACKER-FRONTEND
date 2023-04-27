@@ -101,11 +101,6 @@ export const EventsTable: React.FC<EventTableProps> = ({ events, onEdit }) => {
         ]}
         dataSource={events}
       />
-      <Pagination
-        style={{ padding: '25px', textAlign: 'center' }}
-        defaultCurrent={1}
-        total={50}
-      />
     </ClientComponentLoader>
   );
 };

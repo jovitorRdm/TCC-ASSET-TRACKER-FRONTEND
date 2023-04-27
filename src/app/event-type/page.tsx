@@ -8,8 +8,17 @@ import { eventService } from '@/services/event';
 import SideBar from '../components/Sidebar/Sidebar';
 import Headers from '../components/Headers/Headers';
 import { EventsTable } from './components/EventsTable/EventsTable';
-import { EventType } from '@/types/event';
+import { CreateEventRequestData, EventType } from '@/types/event';
 import PageHeader from './components/PageHeader/PageHeader';
+import { EventDialogForm } from './components/EventDialogForm/EventDialogForm';
+import Pagination from 'antd/lib/pagination';
+import styled from 'styled-components';
+
+const LayoutStyled = styled(Layout)`
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+`;
 
 const { Content } = Layout;
 
@@ -30,7 +39,7 @@ const EventType: React.FC = () => {
   });
 
   const [eventToEdit, setEventToEdit] = useState<EventType>();
-  const [showEventForm, setShowEventDialogForm] = useState(false);
+  const [showEventDialogForm, setShowEventDialogForm] = useState(false);
 
   const handleOpenEventDialogForm = (event?: EventType) => {
     if (event) {
@@ -40,46 +49,54 @@ const EventType: React.FC = () => {
     setShowEventDialogForm(true);
   };
 
+  const handleCloseEventDialogForm = () => {
+    setShowEventDialogForm(false);
+
+    if (eventToEdit) {
+      setEventToEdit(undefined);
+    }
+  };
+
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Headers />
-      <Layout>
-        <SideBar />
+    <>
+      <EventDialogForm
+        open={showEventDialogForm}
+        eventToEdit={eventToEdit}
+        onClose={handleCloseEventDialogForm}
+      />
+
+      <LayoutStyled>
+        <Headers />
         <Layout>
-          <Content style={{ padding: 10, margin: '0 16px' }}>
-            <div
-              style={{
-                width: '100%',
-                padding: 24,
-                backgroundColor: 'white',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-            >
-              <div>
-                <PageHeader
-                  onChangeStatusFilter={(value) => setStatusFilter(value)}
-                  onChangeSearch={(value) => setSearch(value)}
-                  statusFilter={statusFilter}
+          <SideBar />
+          <Layout>
+            <Content style={{ padding: 10, margin: '0 16px' }}>
+              <PageHeader
+                onChangeStatusFilter={(value) => setStatusFilter(value)}
+                onChangeSearch={(value) => setSearch(value)}
+                statusFilter={statusFilter}
+                handleOpenEventDialogForm={handleOpenEventDialogForm}
+              />
+
+              <EventsTable
+                events={data?.data ?? []}
+                onEdit={handleOpenEventDialogForm}
+              />
+              {data && (
+                <Pagination
+                  style={{ padding: '10px', textAlign: 'center' }}
+                  hideOnSinglePage
+                  responsive
+                  current={page}
+                  total={data.totalPages * 10}
+                  onChange={(newPage) => setPage(newPage)}
                 />
-              </div>
-              <Button
-                style={{ backgroundColor: '#409322' }}
-                icon={<PlusCircleOutlined />}
-                type="primary"
-              >
-                ADICIONAR
-              </Button>
-            </div>
-            <EventsTable
-              events={data?.data ?? []}
-              onEdit={handleOpenEventDialogForm}
-            />
-          </Content>
+              )}
+            </Content>
+          </Layout>
         </Layout>
-      </Layout>
-    </Layout>
+      </LayoutStyled>
+    </>
   );
 };
 
