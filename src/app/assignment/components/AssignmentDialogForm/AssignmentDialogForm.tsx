@@ -1,9 +1,11 @@
 'use client';
-import { eventService } from '@/services/event';
-import { CreateEventRequestData, EventType } from '@/types/event';
+import { getRoleProps } from '@/helpers/getRoleProps';
+import { assignmentService } from '@/services/assignment';
+import { Assignment, CreateAssignmentRequestData } from '@/types/assignment';
 import { ErrorMessages } from '@/types/messages';
+import { PaymentMethod } from '@/types/paymentMethod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Button, Form, Input, InputNumber, Modal } from 'antd';
+import { Button, Form, Input, InputNumber, Modal, Select } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import { useEffect } from 'react';
 import styled from 'styled-components';
@@ -44,39 +46,46 @@ const StyledModal = styled(Modal)`
   }
 `;
 
-interface EventDialogFormProps {
+interface AssignmentDialogFormProps {
   open: boolean;
-  eventToEdit?: EventType;
+  assignmentToEdit?: Assignment;
   onClose: () => void;
 }
 
-export const EventDialogForm: React.FC<EventDialogFormProps> = ({
+export const AssignmentDialogForm: React.FC<AssignmentDialogFormProps> = ({
   open,
-  eventToEdit,
+  assignmentToEdit,
   onClose,
 }) => {
   const queryClient = useQueryClient();
 
   const [form] = Form.useForm();
 
-  const { resetFields, setFieldsValue, validateFields, getFieldsValue } = form;
+  const {
+    resetFields,
+    setFieldsValue,
+    setFieldValue,
+    validateFields,
+    getFieldsValue,
+  } = form;
 
-  const createEventType = useMutation({
-    mutationFn: (data: CreateEventRequestData) => eventService.create(data),
+  const createAssignmentType = useMutation({
+    mutationFn: (data: CreateAssignmentRequestData) =>
+      assignmentService.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries(['events']);
     },
   });
 
-  const editEvent = useMutation({
-    mutationFn: (data: EventType) => eventService.update(data),
+  const editAssignment = useMutation({
+    mutationFn: (data: Assignment) => assignmentService.update(data),
     onSuccess: () => {
       queryClient.invalidateQueries(['events']);
     },
   });
 
   const handleCancel = () => {
-    if (createEventType.isLoading || editEvent.isLoading) {
+    if (createAssignmentType.isLoading || createAssignmentType.isLoading) {
       return;
     }
 
@@ -87,10 +96,10 @@ export const EventDialogForm: React.FC<EventDialogFormProps> = ({
   const handleSubmit = () => {
     validateFields()
       .then((data) => {
-        if (eventToEdit) {
-          editEvent
+        if (assignmentToEdit) {
+          editAssignment
             .mutateAsync({
-              ...eventToEdit,
+              ...assignmentToEdit,
               ...data,
             })
             .then(() => {
@@ -98,7 +107,7 @@ export const EventDialogForm: React.FC<EventDialogFormProps> = ({
             })
             .catch(() => {});
         } else {
-          createEventType
+          createAssignmentType
             .mutateAsync(data)
             .then(() => {
               handleCancel();
@@ -112,20 +121,22 @@ export const EventDialogForm: React.FC<EventDialogFormProps> = ({
   };
 
   useEffect(() => {
-    if (eventToEdit) {
+    if (assignmentToEdit) {
       setFieldsValue({
-        name: eventToEdit.name,
-        description: eventToEdit.description,
+        name: assignmentToEdit.name,
+        description: assignmentToEdit.description,
+        paymentMethod: assignmentToEdit.paymentMethod,
+        paymentValue: assignmentToEdit.paymentValue,
       });
     }
-  }, [eventToEdit]);
+  }, [assignmentToEdit]);
 
   return (
     <StyledModal
       centered
       open={open}
       onCancel={handleCancel}
-      title={`${eventToEdit ? 'Editar' : 'Adicionar'} evento`}
+      title={`${assignmentToEdit ? 'Editar' : 'Adicionar'} Atribuição`}
       footer={[
         <Button
           danger
@@ -137,7 +148,7 @@ export const EventDialogForm: React.FC<EventDialogFormProps> = ({
         </Button>,
         <Button
           key="submit"
-          loading={createEventType.isLoading || editEvent.isLoading}
+          loading={createAssignmentType.isLoading || editAssignment.isLoading}
           type="primary"
           style={{ width: 'calc(50% - 4px)' }}
           onClick={handleSubmit}
@@ -149,7 +160,7 @@ export const EventDialogForm: React.FC<EventDialogFormProps> = ({
       <Form
         layout="vertical"
         size="middle"
-        disabled={createEventType.isLoading || editEvent.isLoading}
+        disabled={createAssignmentType.isLoading || editAssignment.isLoading}
         form={form}
         initialValues={{
           name: '',
@@ -166,7 +177,7 @@ export const EventDialogForm: React.FC<EventDialogFormProps> = ({
             { type: 'string', max: 120, message: ErrorMessages.MSGE09 },
           ]}
         >
-          <Input size="large" placeholder="Dê um nome para o evento..." />
+          <Input size="large" placeholder="Dê um nome para a atribuição..." />
         </Form.Item>
 
         <Form.Item
@@ -182,10 +193,57 @@ export const EventDialogForm: React.FC<EventDialogFormProps> = ({
             showCount
             size="large"
             maxLength={500}
-            placeholder="Escreva a descrição do evento aqui..."
+            placeholder="Escreva o que está atribuição realizará..."
             autoSize={{ minRows: 2, maxRows: 5 }}
           />
         </Form.Item>
+
+        <label>
+          <strong style={{ color: 'red' }}>*</strong> Selecione um o método de
+          pagamento
+        </label>
+        <div
+          style={{
+            paddingTop: '16px',
+            display: 'flex',
+            gap: '16px',
+
+            width: '100%',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Form.Item label="" required name={'paymentMethod'}>
+            <Select
+              placeholder="Selecione uma opção"
+              style={{ width: '150px' }}
+              onChange={(value) => {
+                setFieldValue('paymentMethod', value);
+              }}
+              options={[
+                { value: 'hour', label: 'Hora' },
+                { value: 'day', label: 'Dia' },
+                { value: 'event', label: 'Evento' },
+                { value: 'peopleQuantity', label: 'Por Pessoa' },
+              ]}
+            />
+          </Form.Item>
+          <Form.Item
+            required
+            name="paymentValue"
+            style={{ width: '100%' }}
+            rules={[
+              { required: true, message: '' },
+              { type: 'number', min: 1, message: ErrorMessages.MSGE10 },
+            ]}
+          >
+            <InputNumber
+              style={{ width: '100%' }}
+              addonAfter="R$"
+              placeholder="valor pago em Reais"
+              step={0.01}
+            />
+          </Form.Item>
+        </div>
       </Form>
     </StyledModal>
   );

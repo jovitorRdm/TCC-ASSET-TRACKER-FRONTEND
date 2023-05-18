@@ -14,6 +14,7 @@ import {
   FileDoneOutlined,
 } from '@ant-design/icons';
 import Sider from 'antd/es/layout/Sider';
+import { usePathname, useRouter } from 'next/navigation';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -32,18 +33,24 @@ function getItem(
 }
 
 const items: MenuItem[] = [
-  getItem('Home', '1', <HomeOutlined />),
-  getItem('Serviços', '2', <FormOutlined />),
-  getItem('Estoque', '3', <InboxOutlined />),
-  getItem('Usuarios', '4', <ContactsOutlined />),
-  getItem('Funcionários', '5', <TeamOutlined />),
-  getItem('Agendamentos', '6', <CarryOutOutlined />),
-  getItem('Tipos de Eventos', '7', <BarsOutlined />),
-  getItem('Tipos de Produtos', '8', <FileDoneOutlined />),
-  getItem('Relatorios', '9', <CalendarOutlined />),
+  getItem('Home', '/', <HomeOutlined />),
+  getItem('Atribuição', '/assignment', <FormOutlined />),
+  getItem('Tipos de Eventos', '/event-type', <BarsOutlined />),
+
+  // getItem('Home', '/assignment', <HomeOutlined />),
+  // getItem('Serviços', '2', <FormOutlined />),
+  // getItem('Estoque', '3', <InboxOutlined />),
+  // getItem('Usuarios', '4', <ContactsOutlined />),
+  // getItem('Funcionários', '5', <TeamOutlined />),
+  // getItem('Agendamentos', '6', <CarryOutOutlined />),
+  // getItem('Tipos de Eventos', '/assignment', <FileDoneOutlined />),
+  // getItem('Tipos de Produtos', '8', <FileDoneOutlined />),
+  // getItem('Relatorios', '9', <CalendarOutlined />),
 ];
 
 const SideBar: React.FC = () => {
+  const { push } = useRouter();
+  const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -54,7 +61,12 @@ const SideBar: React.FC = () => {
       collapsed={collapsed}
       onCollapse={(value) => setCollapsed(value)}
     >
-      <Menu defaultSelectedKeys={['7']} mode="inline" items={items} />
+      <Menu
+        mode="inline"
+        items={items}
+        defaultSelectedKeys={[pathname]}
+        onClick={({ key }) => push(key)}
+      />
     </Sider>
   );
 };

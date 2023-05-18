@@ -18,4 +18,5 @@ export enum ErrorMessages {
     MSGE09 = 'Campo excede a quantidade máxima permitida de caracteres',
     MSGE10 = 'Valor do campo menor que o mínimo permitido',
     MSGE11 = 'Valor do campo maior que o máximo permitido',
+    
 }

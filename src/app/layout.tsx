@@ -4,7 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ClientComponentLoader } from '@/components/ClientComponentLoader';
 
 export const metadata = {
-  title: 'Tipos de Eventos',
+  title: 'ASSET tracker',
 };
 
 export default async function RootLayout({
