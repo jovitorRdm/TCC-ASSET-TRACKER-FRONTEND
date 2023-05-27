@@ -1,13 +1,24 @@
 'use client';
 import { getRoleProps } from '@/helpers/getRoleProps';
 import { assignmentService } from '@/services/assignment';
+import { AccountType } from '@/types/accountType';
 import { Assignment, CreateAssignmentRequestData } from '@/types/assignment';
 import { ErrorMessages } from '@/types/messages';
 import { PaymentMethod } from '@/types/paymentMethod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Button, Form, Input, InputNumber, Modal, Select } from 'antd';
+import {
+  Button,
+  Form,
+  Input,
+  InputNumber,
+  Modal,
+  Select,
+  Radio,
+  RadioChangeEvent,
+  Switch,
+} from 'antd';
 import TextArea from 'antd/es/input/TextArea';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Swal from 'sweetalert2';
 
@@ -60,6 +71,7 @@ export const AssignmentDialogForm: React.FC<AssignmentDialogFormProps> = ({
   const queryClient = useQueryClient();
 
   const [form] = Form.useForm();
+  const [showSelect, setShowSelect] = useState(false);
 
   const {
     resetFields,
@@ -73,14 +85,14 @@ export const AssignmentDialogForm: React.FC<AssignmentDialogFormProps> = ({
     mutationFn: (data: CreateAssignmentRequestData) =>
       assignmentService.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['events']);
+      queryClient.invalidateQueries(['assignments']);
     },
   });
 
   const editAssignment = useMutation({
     mutationFn: (data: Assignment) => assignmentService.update(data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['events']);
+      queryClient.invalidateQueries(['assignments']);
     },
   });
 
@@ -127,7 +139,10 @@ export const AssignmentDialogForm: React.FC<AssignmentDialogFormProps> = ({
         description: assignmentToEdit.description,
         paymentMethod: assignmentToEdit.paymentMethod,
         paymentValue: assignmentToEdit.paymentValue,
+        accountType: assignmentToEdit.accountType,
+        accountRequirement: assignmentToEdit.accountRequirement,
       });
+      setShowSelect(assignmentToEdit.accountRequirement);
     }
   }, [assignmentToEdit]);
 
@@ -207,7 +222,6 @@ export const AssignmentDialogForm: React.FC<AssignmentDialogFormProps> = ({
             paddingTop: '16px',
             display: 'flex',
             gap: '16px',
-
             width: '100%',
             justifyContent: 'space-between',
           }}
@@ -244,6 +258,59 @@ export const AssignmentDialogForm: React.FC<AssignmentDialogFormProps> = ({
             />
           </Form.Item>
         </div>
+
+        <Form.Item
+          required
+          label="Se tiver necessidade de conta"
+          name="accountRequirement"
+        >
+          <Switch
+            checkedChildren="Sim"
+            checked={showSelect}
+            unCheckedChildren="Não"
+            onChange={(value) => {
+              setFieldValue('accountRequirement', value);
+              setShowSelect(value);
+            }}
+          />
+        </Form.Item>
+
+        {showSelect ? (
+          <Form.Item label="Selecione o tipo de Conta" name={'accountType'}>
+            <Select
+              placeholder="Selecione uma opção"
+              style={{ width: '50%' }}
+              onChange={(value) => {
+                setFieldValue('AccountType', value);
+              }}
+              options={[
+                {
+                  value: AccountType.EVENTADMINISTRATOR,
+                  label: 'Administrador de Eventos',
+                },
+                { value: AccountType.RECEPTIONIST, label: 'Recepcionista' },
+              ]}
+            />
+          </Form.Item>
+        ) : (
+          <Form.Item label="Selecione o tipo de Conta" name={'accountType'}>
+            <Select
+              placeholder="Selecione uma opção"
+              disabled
+              style={{ width: '50%' }}
+              onChange={(value) => {
+                setFieldValue('AccountType', value);
+              }}
+              options={[
+                {
+                  value: AccountType.EVENTADMINISTRATOR,
+                  label: 'Administrador de Eventos',
+                },
+                { value: AccountType.RECEPTIONIST, label: 'Recepcionista' },
+              ]}
+            />
+          </Form.Item>
+        )}
       </Form>
     </StyledModal>
   );

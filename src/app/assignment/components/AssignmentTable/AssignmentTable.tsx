@@ -24,7 +24,7 @@ export const AssignmentsTable: React.FC<AssignmentTableProps> = ({
   const changeStatus = useMutation({
     mutationFn: (params: any) =>
       assignmentService.changeStatus(params.id, params.status),
-    onSuccess: () => queryClient.invalidateQueries(['events']),
+    onSuccess: () => queryClient.invalidateQueries(['assignments']),
   });
 
   const handleChangeStatus = (id: string, status: GenericStatus) => {
@@ -63,7 +63,7 @@ export const AssignmentsTable: React.FC<AssignmentTableProps> = ({
         pagination={false}
         columns={[
           {
-            title: 'Evento',
+            title: 'Atribuição',
             dataIndex: 'name',
             key: 'name',
             align: 'left',
@@ -99,15 +99,28 @@ export const AssignmentsTable: React.FC<AssignmentTableProps> = ({
         ]}
         dataSource={assignments}
         expandable={{
-          expandedRowRender: ({ description, paymentMethod, paymentValue }) => (
+          expandedRowRender: ({
+            description,
+            paymentMethod,
+            paymentValue,
+            accountRequirement,
+            accountType,
+          }) => (
             <div style={{ paddingLeft: 8 }}>
               <span>
                 <div style={{ paddingLeft: '40px' }}>
                   <strong>Descrição:</strong> {`${description}`} <br />
-                  <strong>Remuneração:</strong>{' '}
-                  {`R$ ${paymentValue}/${
+                  <strong>Remuneração:</strong>
+                  {` R$ ${paymentValue}/${
                     getRoleProps(paymentMethod).translated
                   }`}
+                  {accountRequirement == true && (
+                    <span>
+                      <br />
+                      <strong>Tipo de Conta:</strong>
+                      {` R$ ${accountType}`}
+                    </span>
+                  )}
                 </div>
               </span>
             </div>

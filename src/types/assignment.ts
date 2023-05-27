@@ -1,3 +1,4 @@
+import { AccountType } from "./accountType";
 import { GenericStatus } from "./genericStatus";
 import { PaymentMethod } from "./paymentMethod";
 
@@ -8,6 +9,9 @@ export interface Assignment {
     description: string;
     paymentMethod: PaymentMethod;
     paymentValue: number;
+    accountRequirement: boolean;
+    accountType: AccountType;
+
 }
 
 export interface CreateAssignmentRequestData {
@@ -15,4 +19,6 @@ export interface CreateAssignmentRequestData {
     description: string;
     paymentMethod: PaymentMethod;
     paymentValue: number;
+    accountRequirement: boolean;
+    accountType: AccountType;
 }

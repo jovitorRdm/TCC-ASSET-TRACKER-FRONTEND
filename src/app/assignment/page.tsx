@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Layout, Button, Input, Form } from 'antd';
+import { Layout, Button, Input, Form, RadioChangeEvent } from 'antd';
 import { GenericStatus } from '@/types/genericStatus';
 import SideBar from '../components/Sidebar/Sidebar';
 import Headers from '../components/Headers/Headers';
@@ -29,7 +29,7 @@ const Assignment: React.FC = () => {
     'all'
   );
 
-  const { data } = useQuery(['events', page, statusFilter, search], {
+  const { data } = useQuery(['assignments', page, statusFilter, search], {
     queryFn: () =>
       assignmentService.getPaginated({
         filterByStatus: statusFilter !== 'all' ? statusFilter : undefined,
