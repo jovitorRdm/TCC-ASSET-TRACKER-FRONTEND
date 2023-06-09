@@ -1,4 +1,5 @@
 'use client';
+import { getAccountTypeProps } from '@/helpers/getAccontTypeProps';
 import { getRoleProps } from '@/helpers/getRoleProps';
 import { assignmentService } from '@/services/assignment';
 import { AccountType } from '@/types/accountType';
@@ -213,10 +214,10 @@ export const AssignmentDialogForm: React.FC<AssignmentDialogFormProps> = ({
           />
         </Form.Item>
 
-        <label>
+        {/* <label>
           <strong style={{ color: 'red' }}>*</strong> Selecione um o método de
           pagamento
-        </label>
+        </label> */}
         <div
           style={{
             paddingTop: '16px',
@@ -226,7 +227,7 @@ export const AssignmentDialogForm: React.FC<AssignmentDialogFormProps> = ({
             justifyContent: 'space-between',
           }}
         >
-          <Form.Item label="" required name={'paymentMethod'}>
+          <Form.Item label="Tipo de Pagamento" required name={'paymentMethod'}>
             <Select
               placeholder="Selecione uma opção"
               style={{ width: '150px' }}
@@ -242,6 +243,7 @@ export const AssignmentDialogForm: React.FC<AssignmentDialogFormProps> = ({
             />
           </Form.Item>
           <Form.Item
+            label="Valor Pago"
             required
             name="paymentValue"
             style={{ width: '100%' }}
@@ -259,11 +261,7 @@ export const AssignmentDialogForm: React.FC<AssignmentDialogFormProps> = ({
           </Form.Item>
         </div>
 
-        <Form.Item
-          required
-          label="Se tiver necessidade de conta"
-          name="accountRequirement"
-        >
+        <Form.Item required label="Precisa de Conta?" name="accountRequirement">
           <Switch
             checkedChildren="Sim"
             checked={showSelect}
@@ -276,7 +274,7 @@ export const AssignmentDialogForm: React.FC<AssignmentDialogFormProps> = ({
         </Form.Item>
 
         {showSelect ? (
-          <Form.Item label="Selecione o tipo de Conta" name={'accountType'}>
+          <Form.Item label="Tipo de Conta" name={'accountType'}>
             <Select
               placeholder="Selecione uma opção"
               style={{ width: '50%' }}
@@ -286,14 +284,19 @@ export const AssignmentDialogForm: React.FC<AssignmentDialogFormProps> = ({
               options={[
                 {
                   value: AccountType.EVENTADMINISTRATOR,
-                  label: 'Administrador de Eventos',
+                  label: getAccountTypeProps(AccountType.EVENTADMINISTRATOR)
+                    .translated,
                 },
-                { value: AccountType.RECEPTIONIST, label: 'Recepcionista' },
+                {
+                  value: AccountType.RECEPTIONIST,
+                  label: getAccountTypeProps(AccountType.RECEPTIONIST)
+                    .translated,
+                },
               ]}
             />
           </Form.Item>
         ) : (
-          <Form.Item label="Selecione o tipo de Conta" name={'accountType'}>
+          <Form.Item label="Tipo de Conta" name={'accountType'}>
             <Select
               placeholder="Selecione uma opção"
               disabled
@@ -304,9 +307,14 @@ export const AssignmentDialogForm: React.FC<AssignmentDialogFormProps> = ({
               options={[
                 {
                   value: AccountType.EVENTADMINISTRATOR,
-                  label: 'Administrador de Eventos',
+                  label: getAccountTypeProps(AccountType.EVENTADMINISTRATOR)
+                    .translated,
                 },
-                { value: AccountType.RECEPTIONIST, label: 'Recepcionista' },
+                {
+                  value: AccountType.RECEPTIONIST,
+                  label: getAccountTypeProps(AccountType.RECEPTIONIST)
+                    .translated,
+                },
               ]}
             />
           </Form.Item>

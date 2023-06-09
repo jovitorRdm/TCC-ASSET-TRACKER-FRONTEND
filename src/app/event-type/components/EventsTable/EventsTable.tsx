@@ -58,7 +58,7 @@ export const EventsTable: React.FC<EventTableProps> = ({ events, onEdit }) => {
         pagination={false}
         columns={[
           {
-            title: 'Evento',
+            title: 'EVENTOS',
             dataIndex: 'name',
             key: 'name',
             align: 'left',

@@ -8,6 +8,8 @@ import { StatusButton } from '@/components/StatusButton';
 import { assignmentService } from '@/services/assignment';
 import { PaymentMethod } from '@/types/paymentMethod';
 import { getRoleProps } from '@/helpers/getRoleProps';
+import { getAccountTypeProps } from '@/helpers/getAccontTypeProps';
+import { AccountType } from '@/types/accountType';
 
 interface AssignmentTableProps {
   assignments: Assignment[];
@@ -63,7 +65,7 @@ export const AssignmentsTable: React.FC<AssignmentTableProps> = ({
         pagination={false}
         columns={[
           {
-            title: 'Atribuição',
+            title: 'ATRIBUIÇÕES',
             dataIndex: 'name',
             key: 'name',
             align: 'left',
@@ -111,14 +113,14 @@ export const AssignmentsTable: React.FC<AssignmentTableProps> = ({
                 <div style={{ paddingLeft: '40px' }}>
                   <strong>Descrição:</strong> {`${description}`} <br />
                   <strong>Remuneração:</strong>
-                  {` R$ ${paymentValue}/${
+                  {` R$ ${paymentValue} ${
                     getRoleProps(paymentMethod).translated
                   }`}
                   {accountRequirement == true && (
                     <span>
                       <br />
                       <strong>Tipo de Conta:</strong>
-                      {` R$ ${accountType}`}
+                      {` R$ ${getAccountTypeProps(accountType).translated}`}
                     </span>
                   )}
                 </div>

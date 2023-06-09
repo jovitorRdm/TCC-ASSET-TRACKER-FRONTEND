@@ -10,13 +10,13 @@ type PaymentMethodProps = {
 export function getRoleProps(role: PaymentMethod) {
   const props: PaymentMethodProps = {
     [PaymentMethod.DAY]: {
-      translated: 'Diário',
+      translated: 'Por Dia',
     },
     [PaymentMethod.HOUR]: {
-      translated: 'A Hora',
+      translated: 'Por Hora',
     },
     [PaymentMethod.EVENT]: {
-      translated: 'O Evento',
+      translated: 'Por Evento',
     },
     [PaymentMethod.PEOPLE_QUANTITY]: {
       translated: 'Por Pessoa',

@@ -79,7 +79,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
       <LeftContent>
         <Input
           className="Input"
-          placeholder="Pesquisar Atribuição"
+          placeholder="Pesquisar Colaborador"
           suffix={<SearchOutlined />}
           onChange={(e) => debouncedSearch(e.target.value)}
         />

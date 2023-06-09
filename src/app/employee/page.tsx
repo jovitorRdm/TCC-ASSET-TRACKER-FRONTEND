@@ -7,11 +7,11 @@ import SideBar from '../components/Sidebar/Sidebar';
 import Headers from '../components/Headers/Headers';
 import Pagination from 'antd/lib/pagination';
 import styled from 'styled-components';
-import { assignmentService } from '@/services/assignment';
-import { Assignment } from '@/types/assignment';
-import { AssignmentsTable } from './components/AssignmentTable/AssignmentTable';
-import { AssignmentDialogForm } from './components/AssignmentDialogForm/AssignmentDialogForm';
-import PageHeader from './components/PageHeader/PageHeader';
+import { employeeService } from '@/services/employee';
+import { Employee } from '@/types/employee';
+import { EmployeeTable } from './components/EmployeeTable/EmployeeTable';
+import PageHeader from './components/EmployeeHeader/EmployeeHeader';
+import { EmployeeDialogForm } from './components/EmployeeDialogForm/EmployeeDialogForm';
 
 const LayoutStyled = styled(Layout)`
   height: 100vh;
@@ -21,48 +21,47 @@ const LayoutStyled = styled(Layout)`
 
 const { Content } = Layout;
 
-const Assignment: React.FC = () => {
+const Employee: React.FC = () => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<GenericStatus | 'all'>(
     'all'
   );
 
-  const { data } = useQuery(['assignments', page, statusFilter, search], {
+  const { data } = useQuery(['employee', page, statusFilter, search], {
     queryFn: () =>
-      assignmentService.getPaginated({
+      employeeService.getPaginated({
         filterByStatus: statusFilter !== 'all' ? statusFilter : undefined,
         query: search,
         page,
       }),
   });
 
-  const [assignmentToEdit, setAssignmentToEdit] = useState<Assignment>();
-  const [showAssignmentDialogForm, setShowAssignmentDialogForm] =
-    useState(false);
+  const [employeeToEdit, setEmployeeToEdit] = useState<Employee>();
+  const [showEmployeeDialogForm, setShowEmployeeDialogForm] = useState(false);
 
-  const handleOpenAssignmentDialogForm = (assignment?: Assignment) => {
-    if (assignment) {
-      setAssignmentToEdit(assignment);
+  const handleOpenEmployeeDialogForm = (employee?: Employee) => {
+    if (employee) {
+      setEmployeeToEdit(employee);
     }
 
-    setShowAssignmentDialogForm(true);
+    setShowEmployeeDialogForm(true);
   };
 
-  const handleCloseAssignmentDialogForm = () => {
-    setShowAssignmentDialogForm(false);
+  const handleCloseEmployeeDialogForm = () => {
+    setShowEmployeeDialogForm(false);
 
-    if (assignmentToEdit) {
-      setAssignmentToEdit(undefined);
+    if (employeeToEdit) {
+      setEmployeeToEdit(undefined);
     }
   };
 
   return (
     <>
-      <AssignmentDialogForm
-        open={showAssignmentDialogForm}
-        assignmentToEdit={assignmentToEdit}
-        onClose={handleCloseAssignmentDialogForm}
+      <EmployeeDialogForm
+        open={showEmployeeDialogForm}
+        employeeToEdit={employeeToEdit}
+        onClose={handleCloseEmployeeDialogForm}
       />
 
       <LayoutStyled>
@@ -75,12 +74,12 @@ const Assignment: React.FC = () => {
                 onChangeStatusFilter={(value) => setStatusFilter(value)}
                 onChangeSearch={(value) => setSearch(value)}
                 statusFilter={statusFilter}
-                handleOpenEventDialogForm={handleOpenAssignmentDialogForm}
+                handleOpenEventDialogForm={handleOpenEmployeeDialogForm}
               />
 
-              <AssignmentsTable
-                assignments={data?.data ?? []}
-                onEdit={handleOpenAssignmentDialogForm}
+              <EmployeeTable
+                employee={data?.data ?? []}
+                onEdit={handleOpenEmployeeDialogForm}
               />
               {data && (
                 <Pagination
@@ -100,4 +99,4 @@ const Assignment: React.FC = () => {
   );
 };
 
-export default Assignment;
+export default Employee;
