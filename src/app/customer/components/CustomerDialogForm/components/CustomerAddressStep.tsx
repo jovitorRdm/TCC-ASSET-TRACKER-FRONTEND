@@ -1,20 +1,20 @@
 'use client';
 import { addressService } from '@/services/address';
 import { Address } from '@/types/address';
-import { Employee } from '@/types/employee';
+import { Customer } from '@/types/customer';
 import { ErrorMessages } from '@/types/messages';
 import { useQuery } from '@tanstack/react-query';
 import { Checkbox, DatePicker, Form, FormInstance, Input, Select } from 'antd';
 import { MaskedInput } from 'antd-mask-input';
 import { useState } from 'react';
 
-interface EmployeeAddressStepProps {
-  employeeForm: FormInstance<Employee>;
+interface CustomerAddressStepProps {
+  customerForm: FormInstance<Customer>;
   onStepValidate: (isValid: boolean) => void;
 }
 
-export const EmployeeAddressStep: React.FC<EmployeeAddressStepProps> = ({
-  employeeForm,
+export const CustomerAddressStep: React.FC<CustomerAddressStepProps> = ({
+  customerForm,
   onStepValidate,
 }) => {
   const [form] = Form.useForm<Address>();
@@ -28,13 +28,13 @@ export const EmployeeAddressStep: React.FC<EmployeeAddressStepProps> = ({
   } = form;
 
   const [lastCep, setLastCep] = useState(
-    employeeForm.getFieldValue('address')?.cep ?? ''
+    customerForm.getFieldValue('address')?.cep ?? ''
   );
   const [currentSelectedState, setCurrentSelectedState] = useState(
-    employeeForm.getFieldValue('address')?.state ?? ''
+    customerForm.getFieldValue('address')?.state ?? ''
   );
   const [noNumber, setNoNumber] = useState(
-    employeeForm.getFieldValue('address')?.number === 's/n' ?? false
+    customerForm.getFieldValue('address')?.number === 's/n' ?? false
   );
 
   const { data: states, isLoading: isLoadingStates } = useQuery(
@@ -59,7 +59,7 @@ export const EmployeeAddressStep: React.FC<EmployeeAddressStepProps> = ({
       layout="vertical"
       size="middle"
       form={form}
-      initialValues={employeeForm.getFieldValue('address')}
+      initialValues={customerForm.getFieldValue('address')}
       onValuesChange={(fields) => {
         if (fields.state && fields.state !== currentSelectedState) {
           setFieldValue('city', undefined);
@@ -112,7 +112,7 @@ export const EmployeeAddressStep: React.FC<EmployeeAddressStepProps> = ({
 
         onStepValidate(isValid);
 
-        employeeForm.setFieldValue('address', getFieldsValue());
+        customerForm.setFieldValue('address', getFieldsValue());
       }}
     >
       <Form.Item

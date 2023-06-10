@@ -7,6 +7,7 @@ import {
   HomeOutlined,
   AuditOutlined,
   IdcardOutlined,
+  TeamOutlined,
 } from '@ant-design/icons';
 import Sider from 'antd/es/layout/Sider';
 import { usePathname, useRouter } from 'next/navigation';
@@ -32,6 +33,7 @@ const items: MenuItem[] = [
   getItem('Atribuição', '/assignment', <IdcardOutlined />),
   getItem('Eventos', '/event-type', <BarsOutlined />),
   getItem('Colaboradores', '/employee', <AuditOutlined />),
+  getItem('Clientes', '/customer', <TeamOutlined />),
   // getItem('Home', '/assignment', <HomeOutlined />),
   // getItem('Serviços', '2', <FormOutlined />),
   // getItem('Estoque', '3', <InboxOutlined />),
