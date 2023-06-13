@@ -208,7 +208,7 @@ export const CustomerDialogForm: React.FC<CustomerDialogFormProps> = ({
       centered
       open={open}
       onCancel={handleCancel}
-      title={`${customerToEdit ? 'Editar' : 'Adicionar'} colaborador`}
+      title={`${customerToEdit ? 'Editar' : 'Adicionar'} cliente`}
       footer={[
         <Button
           danger

@@ -1,7 +1,7 @@
 import { GenericStatus } from '@/types/genericStatus';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { EditOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { Button, Divider, Modal, Table, Tooltip } from 'antd';
+import { Button, Divider, Modal, Table, Tag, Tooltip } from 'antd';
 import { ClientComponentLoader } from '@/components/ClientComponentLoader';
 import { StatusButton } from '@/components/StatusButton';
 import { Employee } from '@/types/employee';
@@ -90,7 +90,17 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
             {
               key: 'name',
               align: 'left',
-              render: (_, record) => record.assignment.name,
+              render: (_, record) => (
+                <Tag
+                  style={{
+                    textTransform: 'uppercase',
+                    fontWeight: 600,
+                    padding: '4px 8px',
+                  }}
+                >
+                  {record.assignment.name}
+                </Tag>
+              ),
             },
             {
               dataIndex: 'actions',

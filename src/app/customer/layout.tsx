@@ -1,6 +1,3 @@
-import { ClientComponentLoader } from '@/components/ClientComponentLoader';
-import { ClientSideAppProvider } from '@/components/ClientSideAppProvider';
-
 export const metadata = {
   title: 'ASSET tracker | Clientes',
 };
@@ -10,13 +7,5 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <html lang="pt-br">
-      <body>
-        <ClientSideAppProvider>
-          <ClientComponentLoader>{children}</ClientComponentLoader>
-        </ClientSideAppProvider>
-      </body>
-    </html>
-  );
+  return children;
 }

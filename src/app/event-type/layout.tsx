@@ -10,13 +10,5 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <html lang="pt-br">
-      <body>
-        <ClientSideAppProvider>
-          <ClientComponentLoader>{children}</ClientComponentLoader>
-        </ClientSideAppProvider>
-      </body>
-    </html>
-  );
+  return children;
 }

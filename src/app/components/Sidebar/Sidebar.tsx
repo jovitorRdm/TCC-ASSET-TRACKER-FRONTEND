@@ -3,10 +3,11 @@ import React, { useState } from 'react';
 import { Menu } from 'antd';
 import type { MenuProps } from 'antd';
 import {
-  BarsOutlined,
+  CoffeeOutlined,
   HomeOutlined,
   AuditOutlined,
   IdcardOutlined,
+  FileDoneOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
 import Sider from 'antd/es/layout/Sider';
@@ -31,9 +32,10 @@ function getItem(
 const items: MenuItem[] = [
   getItem('Home', '/', <HomeOutlined />),
   getItem('Atribuição', '/assignment', <IdcardOutlined />),
-  getItem('Eventos', '/event-type', <BarsOutlined />),
+  getItem('Eventos', '/event-type', <FileDoneOutlined />),
   getItem('Colaboradores', '/employee', <AuditOutlined />),
   getItem('Clientes', '/customer', <TeamOutlined />),
+  getItem('Serviços', '/serviceItem', <CoffeeOutlined />),
   // getItem('Home', '/assignment', <HomeOutlined />),
   // getItem('Serviços', '2', <FormOutlined />),
   // getItem('Estoque', '3', <InboxOutlined />),

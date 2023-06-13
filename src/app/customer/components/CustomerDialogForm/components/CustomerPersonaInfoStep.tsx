@@ -45,7 +45,7 @@ export const CustomerPersonalInfoStep: React.FC<
           { type: 'string', max: 120, message: ErrorMessages.MSGE09 },
         ]}
       >
-        <Input size="large" placeholder="Nome do colaborador" />
+        <Input size="large" placeholder="Nome do Cliente" />
       </Form.Item>
 
       <Form.Item
