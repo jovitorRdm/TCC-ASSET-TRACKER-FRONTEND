@@ -1,4 +1,4 @@
-import { LoginPageContent } from '@/components/LoginPageContent/LoginPageContent';
+import { LoginPageContent } from '@/components/LoginPageContent';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 

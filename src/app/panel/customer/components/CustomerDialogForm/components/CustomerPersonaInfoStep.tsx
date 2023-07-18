@@ -37,7 +37,7 @@ export const CustomerPersonalInfoStep: React.FC<
     >
       <Form.Item
         required
-        label="Name"
+        label="Nome"
         name="name"
         rules={[
           { required: true, message: '' },

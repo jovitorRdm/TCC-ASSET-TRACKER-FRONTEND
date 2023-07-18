@@ -1,17 +1,22 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Menu } from 'antd';
 import type { MenuProps } from 'antd';
+import decode from 'jwt-decode';
 import {
   CoffeeOutlined,
   HomeOutlined,
   AuditOutlined,
   IdcardOutlined,
   FileDoneOutlined,
+  BarsOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
 import Sider from 'antd/es/layout/Sider';
 import { usePathname, useRouter } from 'next/navigation';
+import { getCookie } from 'cookies-next';
+import { getAuthorizedRoutesByRoles } from '@/helpers/getAuthorizedRoutesByRoles ';
+import { AccountType } from '@/types/accountType';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -30,27 +35,39 @@ function getItem(
 }
 
 const items: MenuItem[] = [
-  getItem('Home', '/', <HomeOutlined />),
+  getItem('Home', '/panel', <HomeOutlined />),
   getItem('Atribuição', '/assignment', <IdcardOutlined />),
   getItem('Eventos', '/event-type', <FileDoneOutlined />),
   getItem('Colaboradores', '/employee', <AuditOutlined />),
   getItem('Clientes', '/customer', <TeamOutlined />),
   getItem('Serviços', '/serviceItem', <CoffeeOutlined />),
-  // getItem('Home', '/assignment', <HomeOutlined />),
-  // getItem('Serviços', '2', <FormOutlined />),
-  // getItem('Estoque', '3', <InboxOutlined />),
-  // getItem('Usuarios', '4', <ContactsOutlined />),
-  // getItem('Funcionários', '5', <TeamOutlined />),
-  // getItem('Agendamentos', '6', <CarryOutOutlined />),
-  // getItem('Tipos de Eventos', '/assignment', <FileDoneOutlined />),
-  // getItem('Tipos de Produtos', '8', <FileDoneOutlined />),
-  // getItem('Relatorios', '9', <CalendarOutlined />),
+  getItem('Produtos', '/product', <BarsOutlined />),
 ];
 
 const SideBar: React.FC = () => {
   const { push } = useRouter();
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const [itemsToShow, setItemsToShow] = useState(items);
+
+  const accessToken = getCookie('helloWorld');
+
+  const { account } =
+    typeof window === 'undefined'
+      ? { account: [AccountType.EVENTADMINISTRATOR] }
+      : (decode(accessToken as string) as { account: AccountType[] });
+
+  useEffect(() => {
+    if (typeof accessToken === 'string') {
+      setItemsToShow(
+        items.filter((item) =>
+          getAuthorizedRoutesByRoles(account).includes(
+            (item?.key as string) ?? ''
+          )
+        )
+      );
+    }
+  }, [accessToken]);
 
   return (
     <Sider

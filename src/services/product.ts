@@ -1,24 +1,23 @@
+import { PaginatedDataResponse, PaginatedRequestParams } from "@/types/paginatedData";
+import Api from "./api";
+import { InputProductRequestData, Product } from "@/types/product";
+import { SuccessMessages } from "@/types/messages";
+import { GenericStatus } from "@/types/genericStatus";
 
-import Api from './api';
-import { SuccessMessages } from '@/types/messages';
-import { GenericStatus } from '@/types/genericStatus';
-import { PaginatedDataResponse, PaginatedRequestParams } from '@/types/paginatedData';
-import { InputServiceItemRequestData, ServiceItem } from '@/types/serviceItem';
-
-const baseUrl = '/serviceItem';
+const baseUrl = '/product';
 async function getPaginated(
     params?: PaginatedRequestParams
-): Promise<PaginatedDataResponse<ServiceItem>> {
+): Promise<PaginatedDataResponse<Product>> {
     return Api.get(baseUrl, { params }).then((res) => res.data);
 }
 
-async function create(data: InputServiceItemRequestData): Promise<ServiceItem> {
+async function create(data: InputProductRequestData): Promise<Product> {
     return Api.post(baseUrl, data, {
         headers: { 'success-message': SuccessMessages.MSGS03 },
     }).then((res) => res.data);
 }
 
-async function update(data: InputServiceItemRequestData): Promise<ServiceItem> {
+async function update(data: InputProductRequestData): Promise<Product> {
     return Api.put(`${baseUrl}/${data.id}`, data, {
         headers: { 'success-message': SuccessMessages.MSGS02 },
     }).then((res) => res.data);
@@ -27,7 +26,7 @@ async function update(data: InputServiceItemRequestData): Promise<ServiceItem> {
 async function changeStatus(
     id: string,
     status: GenericStatus
-): Promise<ServiceItem> {
+): Promise<Product> {
     return Api.patch(
         `${baseUrl}/${id}`,
         { status },
@@ -35,4 +34,4 @@ async function changeStatus(
     ).then((res) => res.data);
 }
 
-export const servicesItemService = { getPaginated, create, update, changeStatus };
+export const productService = { getPaginated, create, update, changeStatus };

@@ -3,8 +3,6 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Layout, Button, Input, Form, RadioChangeEvent } from 'antd';
 import { GenericStatus } from '@/types/genericStatus';
-import SideBar from '../components/Sidebar/Sidebar';
-import Headers from '../components/Headers/Headers';
 import Pagination from 'antd/lib/pagination';
 import styled from 'styled-components';
 import { assignmentService } from '@/services/assignment';
@@ -12,6 +10,8 @@ import { Assignment } from '@/types/assignment';
 import { AssignmentsTable } from './components/AssignmentTable/AssignmentTable';
 import { AssignmentDialogForm } from './components/AssignmentDialogForm/AssignmentDialogForm';
 import PageHeader from './components/PageHeader/PageHeader';
+import Headers from '@/app/components/Headers/Headers';
+import SideBar from '@/app/components/Sidebar/Sidebar';
 
 const LayoutStyled = styled(Layout)`
   height: 100vh;

@@ -88,6 +88,7 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
               align: 'left',
             },
             {
+              title: 'ATRIBUIÇÃO',
               key: 'name',
               align: 'left',
               render: (_, record) => (
