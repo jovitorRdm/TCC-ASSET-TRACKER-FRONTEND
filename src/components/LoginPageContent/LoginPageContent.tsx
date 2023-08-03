@@ -9,6 +9,7 @@ import { Button, Form, Image, Input } from 'antd';
 import { ClientComponentLoader } from '../ClientComponentLoader';
 import { ErrorMessages } from '@/types/messages';
 import { LockFilled, UserOutlined } from '@ant-design/icons';
+import { Console } from 'console';
 
 const Aside = styled.aside`
   display: flex;
@@ -17,7 +18,7 @@ const Aside = styled.aside`
   align-items: center;
   width: 50%;
   height: 100vh;
-  background-color: #3f4257;
+  background-color: rgb(150, 117, 170);
   color: #fff;
   min-width: max-content;
 
@@ -90,15 +91,17 @@ export const LoginPageContent: React.FC = () => {
   const onFinish = ({ email, password }: typeof initialValues) => {
     setIsLoading(true);
 
+    console.log(password, email);
+
     authService
       .login(email, password)
       .then((token) => {
-        setCookie('helloWord', token, {
+        setCookie('helloWorld', token, {
           maxAge: 60 * 60 * 24 * 30,
           path: '/',
           secure: true,
         });
-        push('/panel');
+        push('/');
       })
       .finally(() => {
         setIsLoading(false);
@@ -109,16 +112,26 @@ export const LoginPageContent: React.FC = () => {
     <div style={{ display: 'flex' }}>
       <Aside>
         <Stack>
-          <h4>Bem-vindo ao</h4>
-          <h6>Sistema Asset Tracker</h6>
+          <Image
+            src="\img\img-capa.svg"
+            alt="Asset Tracker imagem capa"
+            height={700}
+            width={600}
+          />
+          <br />
+          <h4 style={{ color: '#fff', textAlign: 'center' }}>
+            Bem-vindo ao Sistema <br />
+            <strong>Asset Tracker</strong>
+          </h4>
         </Stack>
       </Aside>
 
       <Main>
         <ClientComponentLoader>
           <Stack>
-            <h4>Bem-vindo ao</h4>
-            <h6>Sistema Asset Tracker</h6>
+            <h4>
+              Bem-vindo ao Sistema <strong>Asset Tracker</strong>
+            </h4>
           </Stack>
 
           <Stack>

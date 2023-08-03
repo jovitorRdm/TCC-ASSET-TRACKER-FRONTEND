@@ -17,6 +17,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { getCookie } from 'cookies-next';
 import { getAuthorizedRoutesByRoles } from '@/helpers/getAuthorizedRoutesByRoles ';
 import { AccountType } from '@/types/accountType';
+import { ClientComponentLoader } from '@/components/ClientComponentLoader';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -35,7 +36,7 @@ function getItem(
 }
 
 const items: MenuItem[] = [
-  getItem('Home', '/panel', <HomeOutlined />),
+  getItem('Home', '/', <HomeOutlined />),
   getItem('Atribuição', '/assignment', <IdcardOutlined />),
   getItem('Eventos', '/event-type', <FileDoneOutlined />),
   getItem('Colaboradores', '/employee', <AuditOutlined />),
@@ -47,27 +48,28 @@ const items: MenuItem[] = [
 const SideBar: React.FC = () => {
   const { push } = useRouter();
   const pathname = usePathname();
+
   const [collapsed, setCollapsed] = useState(false);
   const [itemsToShow, setItemsToShow] = useState(items);
 
-  const accessToken = getCookie('helloWorld');
+  const token = getCookie('helloWorld');
 
-  const { account } =
+  const { accountType } =
     typeof window === 'undefined'
-      ? { account: [AccountType.EVENTADMINISTRATOR] }
-      : (decode(accessToken as string) as { account: AccountType[] });
+      ? { accountType: [AccountType.EVENTADMINISTRATOR] }
+      : (decode(token as string) as { accountType: AccountType });
 
   useEffect(() => {
-    if (typeof accessToken === 'string') {
+    if (typeof token === 'string') {
       setItemsToShow(
         items.filter((item) =>
-          getAuthorizedRoutesByRoles(account).includes(
+          getAuthorizedRoutesByRoles(accountType as AccountType).includes(
             (item?.key as string) ?? ''
           )
         )
       );
     }
-  }, [accessToken]);
+  }, [token]);
 
   return (
     <Sider
@@ -77,12 +79,14 @@ const SideBar: React.FC = () => {
       collapsed={collapsed}
       onCollapse={(value) => setCollapsed(value)}
     >
-      <Menu
-        mode="inline"
-        items={items}
-        defaultSelectedKeys={[pathname]}
-        onClick={({ key }) => push(key)}
-      />
+      <ClientComponentLoader>
+        <Menu
+          mode="inline"
+          items={itemsToShow}
+          defaultSelectedKeys={[pathname]}
+          onClick={({ key }) => push(key)}
+        />
+      </ClientComponentLoader>
     </Sider>
   );
 };

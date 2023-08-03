@@ -1,6 +1,3 @@
-import { ClientComponentLoader } from '@/components/ClientComponentLoader';
-import { ClientSideAppProvider } from '@/components/ClientSideAppProvider';
-
 export const metadata = {
   title: 'ASSET tracker | Eventos',
 };

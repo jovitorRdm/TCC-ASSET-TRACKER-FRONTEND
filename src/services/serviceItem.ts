@@ -9,18 +9,18 @@ const baseUrl = '/serviceItem';
 async function getPaginated(
     params?: PaginatedRequestParams
 ): Promise<PaginatedDataResponse<ServiceItem>> {
-    return Api.get(baseUrl, { params }).then((res) => res.data);
+    return Api.get(baseUrl, { params, headers:{authHeader: true}  }).then((res) => res.data);
 }
 
 async function create(data: InputServiceItemRequestData): Promise<ServiceItem> {
     return Api.post(baseUrl, data, {
-        headers: { 'success-message': SuccessMessages.MSGS03 },
+        headers: { authHeader: true,'success-message': SuccessMessages.MSGS03 },
     }).then((res) => res.data);
 }
 
 async function update(data: InputServiceItemRequestData): Promise<ServiceItem> {
     return Api.put(`${baseUrl}/${data.id}`, data, {
-        headers: { 'success-message': SuccessMessages.MSGS02 },
+        headers: { authHeader: true,'success-message': SuccessMessages.MSGS02 },
     }).then((res) => res.data);
 }
 
@@ -31,7 +31,7 @@ async function changeStatus(
     return Api.patch(
         `${baseUrl}/${id}`,
         { status },
-        { headers: { 'success-message': SuccessMessages.MSGS04 } }
+        { headers: { authHeader: true,'success-message': SuccessMessages.MSGS04 } }
     ).then((res) => res.data);
 }
 

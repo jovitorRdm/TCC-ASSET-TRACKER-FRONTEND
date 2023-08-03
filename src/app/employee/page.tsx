@@ -1,18 +1,17 @@
 'use client';
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Layout, Button, Input } from 'antd';
-import { PlusCircleOutlined } from '@ant-design/icons';
+import { Layout, Button, Input, Form, RadioChangeEvent } from 'antd';
 import { GenericStatus } from '@/types/genericStatus';
-import SideBar from '../components/Sidebar/Sidebar';
-import Headers from '../components/Headers/Headers';
-import PageHeader from './components/PageHeader/PageHeader';
 import Pagination from 'antd/lib/pagination';
 import styled from 'styled-components';
-import { servicesItemService } from '@/services/serviceItem';
-import { ServiceItem } from '@/types/serviceItem';
-import { ServiceDialogForm } from './components/ServiceDialogForm/ServiceDialogForm';
-import { ServicesItemTable } from './components/ServiceTable/ServiceTable';
+import { employeeService } from '@/services/employee';
+import { Employee } from '@/types/employee';
+import { EmployeeTable } from './components/EmployeeTable/EmployeeTable';
+import PageHeader from './components/EmployeeHeader/EmployeeHeader';
+import { EmployeeDialogForm } from './components/EmployeeDialogForm/EmployeeDialogForm';
+import Headers from '@/app/components/Headers/Headers';
+import SideBar from '@/app/components/Sidebar/Sidebar';
 
 const LayoutStyled = styled(Layout)`
   height: 100vh;
@@ -22,47 +21,47 @@ const LayoutStyled = styled(Layout)`
 
 const { Content } = Layout;
 
-const ServiceItem: React.FC = () => {
+const Employee: React.FC = () => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<GenericStatus | 'all'>(
     'all'
   );
 
-  const { data } = useQuery(['service', page, statusFilter, search], {
+  const { data } = useQuery(['employee', page, statusFilter, search], {
     queryFn: () =>
-      servicesItemService.getPaginated({
+      employeeService.getPaginated({
         filterByStatus: statusFilter !== 'all' ? statusFilter : undefined,
         query: search,
         page,
       }),
   });
 
-  const [servicesToEdit, setServicesToEdit] = useState<ServiceItem>();
-  const [showServicesDialogForm, setShowServicesDialogForm] = useState(false);
+  const [employeeToEdit, setEmployeeToEdit] = useState<Employee>();
+  const [showEmployeeDialogForm, setShowEmployeeDialogForm] = useState(false);
 
-  const handleOpenServicesDialogForm = (service?: ServiceItem) => {
-    if (service) {
-      setServicesToEdit(service);
+  const handleOpenEmployeeDialogForm = (employee?: Employee) => {
+    if (employee) {
+      setEmployeeToEdit(employee);
     }
 
-    setShowServicesDialogForm(true);
+    setShowEmployeeDialogForm(true);
   };
 
-  const handleCloseServicesDialogForm = () => {
-    setShowServicesDialogForm(false);
+  const handleCloseEmployeeDialogForm = () => {
+    setShowEmployeeDialogForm(false);
 
-    if (servicesToEdit) {
-      setServicesToEdit(undefined);
+    if (employeeToEdit) {
+      setEmployeeToEdit(undefined);
     }
   };
 
   return (
     <>
-      <ServiceDialogForm
-        open={showServicesDialogForm}
-        serviceItemToEdit={servicesToEdit}
-        onClose={handleCloseServicesDialogForm}
+      <EmployeeDialogForm
+        open={showEmployeeDialogForm}
+        employeeToEdit={employeeToEdit}
+        onClose={handleCloseEmployeeDialogForm}
       />
 
       <LayoutStyled>
@@ -75,12 +74,12 @@ const ServiceItem: React.FC = () => {
                 onChangeStatusFilter={(value) => setStatusFilter(value)}
                 onChangeSearch={(value) => setSearch(value)}
                 statusFilter={statusFilter}
-                handleOpenEventDialogForm={handleOpenServicesDialogForm}
+                handleOpenEventDialogForm={handleOpenEmployeeDialogForm}
               />
 
-              <ServicesItemTable
-                services={data?.data ?? []}
-                onEdit={handleOpenServicesDialogForm}
+              <EmployeeTable
+                employee={data?.data ?? []}
+                onEdit={handleOpenEmployeeDialogForm}
               />
               {data && (
                 <Pagination
@@ -100,4 +99,4 @@ const ServiceItem: React.FC = () => {
   );
 };
 
-export default ServiceItem;
+export default Employee;
