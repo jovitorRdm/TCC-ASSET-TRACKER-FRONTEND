@@ -1,31 +1,28 @@
-import { ErrorMessages } from "@/types/messages";
-import { InternalAxiosRequestConfig } from "axios";
-import { deleteCookie, getCookie } from "cookies-next";
-
+import { ErrorMessages } from '@/types/messages';
+import { InternalAxiosRequestConfig } from 'axios';
+import { deleteCookie, getCookie } from 'cookies-next';
 
 export const authInterceptor = async (config: InternalAxiosRequestConfig) => {
-    const needsToAuth = config.headers?.authHeader !== undefined;
+  const needsToAuth = config.headers?.authHeader !== undefined;
 
-    if(needsToAuth){
-        try{
-            const accessToken = getCookie("helloWord")
+  if (needsToAuth) {
+    try {
+      const token = getCookie('helloWorld');
 
-            if(!accessToken) throw new Error(ErrorMessages.MSGE14);
+      if (!token) throw new Error(ErrorMessages.MSGE14);
 
-            const newConfig: any = {
-                ...config,
-                Headers: {
-                    ...config.headers,
-                    Authorization: `Bearer ${accessToken}`
-                }
-            }
+      const newConfig: any = {
+        ...config,
+        headers: { ...config.headers, Authorization: `Bearer ${token}` },
+      };
 
-            delete newConfig.headers['authHeader'];
+      delete newConfig.headers['authHeader'];
 
-            return newConfig;
-        }catch{
-            deleteCookie("helloWord");
-        }
-        return config;
+      return newConfig;
+    } catch {
+      deleteCookie('helloWorld');
     }
-}
+  }
+
+  return config;
+};

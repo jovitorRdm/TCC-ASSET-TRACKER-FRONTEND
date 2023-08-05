@@ -7,11 +7,11 @@ import { useQuery } from '@tanstack/react-query';
 import { Layout, Pagination } from 'antd';
 import { useState } from 'react';
 import styled from 'styled-components';
-import Headers from '../components/Headers/Headers';
-import SideBar from '../components/Sidebar/Sidebar';
 import PageHeader from './components/ProductHeader/ProductHeader';
 import { ProductDialogForm } from './components/ProductDialogForm/ProductDialogForm';
 import { ProductTable } from './components/ProductTable/ProductTable';
+import Headers from '@/app/components/Headers/Headers';
+import SideBar from '@/app/components/Sidebar/Sidebar';
 
 const LayoutStyled = styled(Layout)`
   height: 100vh;
@@ -69,7 +69,7 @@ const Product: React.FC = () => {
         <Layout>
           <SideBar />
           <Layout>
-            <Content>
+            <Content style={{ padding: 10, margin: '0 16px' }}>
               <PageHeader
                 onChangeStatusFilter={(value) => setStatusFilter(value)}
                 onChangeSearch={(value) => setSearch(value)}

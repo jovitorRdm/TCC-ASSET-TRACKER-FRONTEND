@@ -1,18 +1,17 @@
 'use client';
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Layout, Button, Input } from 'antd';
-import { PlusCircleOutlined } from '@ant-design/icons';
+import { Layout, Button, Input, Form, RadioChangeEvent } from 'antd';
 import { GenericStatus } from '@/types/genericStatus';
-import { eventService } from '@/services/event';
-import SideBar from '../components/Sidebar/Sidebar';
-import Headers from '../components/Headers/Headers';
-import { EventsTable } from './components/EventsTable/EventsTable';
-import { CreateEventRequestData, EventType } from '@/types/event';
-import PageHeader from './components/PageHeader/PageHeader';
-import { EventDialogForm } from './components/EventDialogForm/EventDialogForm';
 import Pagination from 'antd/lib/pagination';
 import styled from 'styled-components';
+import { customerService } from '@/services/customer';
+import { Customer } from '@/types/customer';
+import { CustomerDialogForm } from './components/CustomerDialogForm/EmployeeDialogForm';
+import PageHeader from './components/CustomerHeader/CustomerHeader';
+import { CustomerTable } from './components/CustomerTable/EmployeeTable';
+import Headers from '@/app/components/Headers/Headers';
+import SideBar from '@/app/components/Sidebar/Sidebar';
 
 const LayoutStyled = styled(Layout)`
   height: 100vh;
@@ -22,47 +21,47 @@ const LayoutStyled = styled(Layout)`
 
 const { Content } = Layout;
 
-const EventType: React.FC = () => {
+const Customer: React.FC = () => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<GenericStatus | 'all'>(
     'all'
   );
 
-  const { data } = useQuery(['events', page, statusFilter, search], {
+  const { data } = useQuery(['customer', page, statusFilter, search], {
     queryFn: () =>
-      eventService.getPaginated({
+      customerService.getPaginated({
         filterByStatus: statusFilter !== 'all' ? statusFilter : undefined,
         query: search,
         page,
       }),
   });
 
-  const [eventToEdit, setEventToEdit] = useState<EventType>();
-  const [showEventDialogForm, setShowEventDialogForm] = useState(false);
+  const [customerToEdit, setCustomerToEdit] = useState<Customer>();
+  const [showCustomerDialogForm, setShowCustomerDialogForm] = useState(false);
 
-  const handleOpenEventDialogForm = (event?: EventType) => {
-    if (event) {
-      setEventToEdit(event);
+  const handleOpenCustomerDialogForm = (customer?: Customer) => {
+    if (customer) {
+      setCustomerToEdit(customer);
     }
 
-    setShowEventDialogForm(true);
+    setShowCustomerDialogForm(true);
   };
 
-  const handleCloseEventDialogForm = () => {
-    setShowEventDialogForm(false);
+  const handleCloseCustomerDialogForm = () => {
+    setShowCustomerDialogForm(false);
 
-    if (eventToEdit) {
-      setEventToEdit(undefined);
+    if (customerToEdit) {
+      setCustomerToEdit(undefined);
     }
   };
 
   return (
     <>
-      <EventDialogForm
-        open={showEventDialogForm}
-        eventToEdit={eventToEdit}
-        onClose={handleCloseEventDialogForm}
+      <CustomerDialogForm
+        open={showCustomerDialogForm}
+        customerToEdit={customerToEdit}
+        onClose={handleCloseCustomerDialogForm}
       />
 
       <LayoutStyled>
@@ -75,12 +74,11 @@ const EventType: React.FC = () => {
                 onChangeStatusFilter={(value) => setStatusFilter(value)}
                 onChangeSearch={(value) => setSearch(value)}
                 statusFilter={statusFilter}
-                handleOpenEventDialogForm={handleOpenEventDialogForm}
+                handleOpenEventDialogForm={handleOpenCustomerDialogForm}
               />
-
-              <EventsTable
-                events={data?.data ?? []}
-                onEdit={handleOpenEventDialogForm}
+              <CustomerTable
+                customer={data?.data ?? []}
+                onEdit={handleOpenCustomerDialogForm}
               />
               {data && (
                 <Pagination
@@ -100,4 +98,4 @@ const EventType: React.FC = () => {
   );
 };
 
-export default EventType;
+export default Customer;

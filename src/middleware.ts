@@ -4,24 +4,24 @@ import { getAuthorizedRoutesByRoles } from './helpers/getAuthorizedRoutesByRoles
 import { AccountType } from './types/accountType';
 
 export const config = {
-  matcher: '/panel/:path*',
+  matcher: '/:path*',
 };
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  const accessToken = req.cookies.get('helloWord');
+  const token = req.cookies.get('helloWorld');
 
-  if (!accessToken) {
+  if (!token) {
     return NextResponse.redirect(new URL('/', req.url));
   }
 
-  const { accountType } = decode(accessToken.value) as { accountType: AccountType[] };
+  const { accountType } = decode(token.value) as { accountType: AccountType };
 
-  const authorizedRoutes = getAuthorizedRoutesByRoles(accountType);
+  const authorizedRoutes = getAuthorizedRoutesByRoles(accountType );
 
   if (!authorizedRoutes.includes(pathname)) {
-    const res = NextResponse.redirect(new URL('/panel', req.url));
+    const res = NextResponse.redirect(new URL('/', req.url));
 
     return res;
   }
