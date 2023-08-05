@@ -9,6 +9,7 @@ import { Button, Form, Image, Input } from 'antd';
 import { ClientComponentLoader } from '../ClientComponentLoader';
 import { ErrorMessages } from '@/types/messages';
 import { LockFilled, UserOutlined } from '@ant-design/icons';
+import { Console } from 'console';
 
 const Aside = styled.aside`
   display: flex;
@@ -89,6 +90,8 @@ export const LoginPageContent: React.FC = () => {
 
   const onFinish = ({ email, password }: typeof initialValues) => {
     setIsLoading(true);
+
+    console.log(password, email);
 
     authService
       .login(email, password)
