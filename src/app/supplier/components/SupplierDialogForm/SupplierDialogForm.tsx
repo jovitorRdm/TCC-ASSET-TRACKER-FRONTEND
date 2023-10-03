@@ -5,17 +5,26 @@ import {
   IdcardOutlined,
   UserOutlined,
 } from '@ant-design/icons';
+import { supplierService } from '@/services/supplier';
+import { ErrorMessages } from '@/types/messages';
+import { CreateSupplierRequestData, Supplier } from '@/types/supplier';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Button, Form, Modal, Steps } from 'antd';
-import dayjs from 'dayjs';
+import {
+  DatePicker,
+  Form,
+  Modal,
+  Button,
+  Steps,
+  FormInstance,
+  Input,
+  Select,
+} from 'antd';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Swal from 'sweetalert2';
-import { ErrorMessages } from '@/types/messages';
-import { CreateCustomerRequestData, Customer } from '@/types/customer';
-import { customerService } from '@/services/customer';
-import { CustomerPersonalInfoStep } from './components/CustomerPersonaInfoStep';
-import { CustomerAddressStep } from './components/CustomerAddressStep';
+import dayjs from 'dayjs';
+import { SupplierPersonalInfoStep } from './components/SupplierPersonalInfoStep';
+import { SupplierAddressStep } from './components/SupplierAddressStep';
 
 const StyledModal = styled(Modal)`
   @media (max-width: 600px) {
@@ -52,15 +61,15 @@ const StyledModal = styled(Modal)`
   }
 `;
 
-interface CustomerDialogFormProps {
+interface SupplierPersonalInfoStepProps {
   open: boolean;
-  customerToEdit?: Customer;
+  supplierToEdit?: Supplier;
   onClose: () => void;
 }
 
-export const CustomerDialogForm: React.FC<CustomerDialogFormProps> = ({
+export const SupplierDialogForm: React.FC<SupplierPersonalInfoStepProps> = ({
   open,
-  customerToEdit,
+  supplierToEdit,
   onClose,
 }) => {
   const queryClient = useQueryClient();
@@ -69,18 +78,18 @@ export const CustomerDialogForm: React.FC<CustomerDialogFormProps> = ({
   const [isFirstStepValid, setIsFirstStepValid] = useState(false);
   const [isSecondStepValid, setIsSecondStepValid] = useState(false);
 
-  const [form] = Form.useForm<Customer>();
+  const [form] = Form.useForm<Supplier>();
 
   const { resetFields, setFieldsValue, validateFields, getFieldsValue } = form;
 
-  const createCustomer = useMutation({
-    mutationFn: (data: CreateCustomerRequestData) =>
-      customerService.create(data),
+  const createSupplier = useMutation({
+    mutationFn: (data: CreateSupplierRequestData) =>
+      supplierService.create(data),
     onSuccess: (newItem) => {
       queryClient.setQueriesData(
         {
           predicate: ({ queryKey }) =>
-            queryKey[0] === 'customer' &&
+            queryKey[0] === 'supplier' &&
             (queryKey[1] as number) === 1 &&
             (queryKey[2] === 'all' || queryKey[2] === 'active') &&
             queryKey[3] === '',
@@ -96,7 +105,7 @@ export const CustomerDialogForm: React.FC<CustomerDialogFormProps> = ({
 
       queryClient.invalidateQueries({
         predicate: ({ queryKey }) =>
-          queryKey[0] === 'customer' &&
+          queryKey[0] === 'supplier' &&
           ((queryKey[1] as number) > 1 ||
             queryKey[2] === 'inactive' ||
             queryKey[3] !== ''),
@@ -104,17 +113,17 @@ export const CustomerDialogForm: React.FC<CustomerDialogFormProps> = ({
     },
   });
 
-  const editCustomer = useMutation({
-    mutationFn: (data: Customer) => customerService.update(data),
+  const editSupplier = useMutation({
+    mutationFn: (data: Supplier) => supplierService.update(data),
     onSuccess: (updatedData) => {
       queryClient.setQueriesData(
         {
           predicate: ({ queryKey }) =>
-            queryKey[0] === 'customer' && queryKey[3] === '',
+            queryKey[0] === 'supplier' && queryKey[3] === '',
         },
         (data: any) => {
           const itemIndex: number = data.data.findIndex(
-            (item: Customer) => item.id === updatedData.id
+            (item: Supplier) => item.id === updatedData.id
           );
 
           if (itemIndex === -1) {
@@ -131,7 +140,7 @@ export const CustomerDialogForm: React.FC<CustomerDialogFormProps> = ({
 
       queryClient.invalidateQueries({
         predicate: ({ queryKey }) =>
-          queryKey[0] === 'customer' && queryKey[3] !== '',
+          queryKey[0] === 'supplier' && queryKey[3] !== '',
       });
     },
   });
@@ -150,22 +159,21 @@ export const CustomerDialogForm: React.FC<CustomerDialogFormProps> = ({
         const dataToSend = getFieldsValue([
           'id',
           'name',
-          'cpf',
+          'document',
           'birthdate',
           'email',
           'phoneNumber',
           'address',
-          'assignmentId',
         ]);
 
-        dataToSend.cpf = dataToSend.cpf.replace(/\D/g, '');
+        dataToSend.document = dataToSend.document.replace(/\D/g, '');
         dataToSend.phoneNumber = dataToSend.phoneNumber.replace(/\D/g, '');
         dataToSend.address.cep = dataToSend.address.cep.replace(/\D/g, '');
 
-        if (customerToEdit) {
-          editCustomer
+        if (supplierToEdit) {
+          editSupplier
             .mutateAsync({
-              ...customerToEdit,
+              ...supplierToEdit,
               ...dataToSend,
             })
             .then(() => {
@@ -173,7 +181,7 @@ export const CustomerDialogForm: React.FC<CustomerDialogFormProps> = ({
             })
             .catch(() => {});
         } else {
-          createCustomer
+          createSupplier
             .mutateAsync(dataToSend)
             .then(() => {
               handleCancel();
@@ -187,28 +195,28 @@ export const CustomerDialogForm: React.FC<CustomerDialogFormProps> = ({
   };
 
   useEffect(() => {
-    if (customerToEdit) {
+    if (supplierToEdit) {
       setIsFirstStepValid(true);
       setIsSecondStepValid(true);
 
       setFieldsValue({
-        id: customerToEdit.id,
-        name: customerToEdit.name,
-        cpf: customerToEdit.cpf,
-        birthdate: dayjs(customerToEdit.birthdate) as any,
-        email: customerToEdit.email,
-        phoneNumber: customerToEdit.phoneNumber,
-        address: customerToEdit.address,
+        id: supplierToEdit.id,
+        name: supplierToEdit.name,
+        document: supplierToEdit.document,
+        birthdate: dayjs(supplierToEdit.birthdate) as any,
+        email: supplierToEdit.email,
+        phoneNumber: supplierToEdit.phoneNumber,
+        address: supplierToEdit.address,
       });
     }
-  }, [customerToEdit]);
+  }, [supplierToEdit]);
 
   return (
     <StyledModal
       centered
       open={open}
       onCancel={handleCancel}
-      title={`${customerToEdit ? 'Editar' : 'Adicionar'} cliente`}
+      title={`${supplierToEdit ? 'Editar' : 'Adicionar'} Fornecedores`}
       footer={[
         <Button
           danger
@@ -220,7 +228,7 @@ export const CustomerDialogForm: React.FC<CustomerDialogFormProps> = ({
         </Button>,
         <Button
           key="submit"
-          loading={createCustomer.isLoading || editCustomer.isLoading}
+          loading={createSupplier.isLoading || editSupplier.isLoading}
           type="primary"
           disabled={
             (!isFirstStepValid && step === 0) ||
@@ -249,31 +257,30 @@ export const CustomerDialogForm: React.FC<CustomerDialogFormProps> = ({
         items={[
           {
             title: 'Dados pessoais',
-            disabled: createCustomer.isLoading || editCustomer.isLoading,
+            disabled: createSupplier.isLoading || editSupplier.isLoading,
             icon: <UserOutlined />,
           },
           {
             title: 'Endereço',
             disabled:
               !isFirstStepValid ||
-              createCustomer.isLoading ||
-              editCustomer.isLoading,
+              createSupplier.isLoading ||
+              editSupplier.isLoading,
             icon: <EnvironmentFilled />,
           },
         ]}
       />
 
       {step === 0 && (
-        <CustomerPersonalInfoStep
+        <SupplierPersonalInfoStep
           form={form}
           onStepValidate={(isValid) => setIsFirstStepValid(isValid)}
           // onStepValidate={(isValid) => setIsFirstStepValid(isValid)}
         />
       )}
-
       {step === 1 && (
-        <CustomerAddressStep
-          customerForm={form}
+        <SupplierAddressStep
+          supplierForm={form}
           onStepValidate={(isValid) => setIsSecondStepValid(isValid)}
         />
       )}

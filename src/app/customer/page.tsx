@@ -7,11 +7,11 @@ import Pagination from 'antd/lib/pagination';
 import styled from 'styled-components';
 import { customerService } from '@/services/customer';
 import { Customer } from '@/types/customer';
-import { CustomerDialogForm } from './components/CustomerDialogForm/EmployeeDialogForm';
 import PageHeader from './components/CustomerHeader/CustomerHeader';
-import { CustomerTable } from './components/CustomerTable/EmployeeTable';
 import Headers from '@/app/components/Headers/Headers';
 import SideBar from '@/app/components/Sidebar/Sidebar';
+import { CustomerDialogForm } from './components/CustomerDialogForm/costumerDialogForm';
+import { CustomerTable } from './components/CustomerTable/customerTable';
 
 const LayoutStyled = styled(Layout)`
   height: 100vh;

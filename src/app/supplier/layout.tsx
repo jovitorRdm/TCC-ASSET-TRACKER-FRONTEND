@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'ASSET tracker | Colaboradores',
+  title: 'ASSET tracker | Fornecedores',
 };
 
 export default async function RootLayout({

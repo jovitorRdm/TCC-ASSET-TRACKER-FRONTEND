@@ -7,6 +7,7 @@ const baseRoutes = [
   `/customer`,
   `/serviceItem`,
   `/product`,
+  `/supplier`,
 ];
 const authorizedRoutesByAccount: { [key in AccountType]: string[] } = {
   [AccountType.EVENTADMINISTRATOR]: baseRoutes,

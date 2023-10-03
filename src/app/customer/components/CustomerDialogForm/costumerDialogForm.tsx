@@ -11,12 +11,11 @@ import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Swal from 'sweetalert2';
-import { CreateEmployeeRequestData, Employee } from '@/types/employee';
-import { employeeService } from '@/services/employee';
 import { ErrorMessages } from '@/types/messages';
-import { EmployeeAddressStep } from './components/EmployeeAddressStep';
-import { EmployeePersonalInfoStep } from './components/EmployeePersonaInfoStep';
-import { EmployeeRolesStep } from './components/EmployeeAssignmentStep';
+import { CreateCustomerRequestData, Customer } from '@/types/customer';
+import { customerService } from '@/services/customer';
+import { CustomerPersonalInfoStep } from './components/CustomerPersonaInfoStep';
+import { CustomerAddressStep } from './components/CustomerAddressStep';
 
 const StyledModal = styled(Modal)`
   @media (max-width: 600px) {
@@ -53,15 +52,15 @@ const StyledModal = styled(Modal)`
   }
 `;
 
-interface EmployeeDialogFormProps {
+interface CustomerDialogFormProps {
   open: boolean;
-  employeeToEdit?: Employee;
+  customerToEdit?: Customer;
   onClose: () => void;
 }
 
-export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
+export const CustomerDialogForm: React.FC<CustomerDialogFormProps> = ({
   open,
-  employeeToEdit,
+  customerToEdit,
   onClose,
 }) => {
   const queryClient = useQueryClient();
@@ -70,18 +69,17 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
   const [isFirstStepValid, setIsFirstStepValid] = useState(false);
   const [isSecondStepValid, setIsSecondStepValid] = useState(false);
 
-  const [form] = Form.useForm<Employee>();
-
+  const [form] = Form.useForm<Customer>();
   const { resetFields, setFieldsValue, validateFields, getFieldsValue } = form;
 
-  const createEmployee = useMutation({
-    mutationFn: (data: CreateEmployeeRequestData) =>
-      employeeService.create(data),
+  const createCustomer = useMutation({
+    mutationFn: (data: CreateCustomerRequestData) =>
+      customerService.create(data),
     onSuccess: (newItem) => {
       queryClient.setQueriesData(
         {
           predicate: ({ queryKey }) =>
-            queryKey[0] === 'employee' &&
+            queryKey[0] === 'customer' &&
             (queryKey[1] as number) === 1 &&
             (queryKey[2] === 'all' || queryKey[2] === 'active') &&
             queryKey[3] === '',
@@ -97,7 +95,7 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
 
       queryClient.invalidateQueries({
         predicate: ({ queryKey }) =>
-          queryKey[0] === 'employee' &&
+          queryKey[0] === 'customer' &&
           ((queryKey[1] as number) > 1 ||
             queryKey[2] === 'inactive' ||
             queryKey[3] !== ''),
@@ -105,17 +103,17 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
     },
   });
 
-  const editEmployee = useMutation({
-    mutationFn: (data: Employee) => employeeService.update(data),
+  const editCustomer = useMutation({
+    mutationFn: (data: Customer) => customerService.update(data),
     onSuccess: (updatedData) => {
       queryClient.setQueriesData(
         {
           predicate: ({ queryKey }) =>
-            queryKey[0] === 'employee' && queryKey[3] === '',
+            queryKey[0] === 'customer' && queryKey[3] === '',
         },
         (data: any) => {
           const itemIndex: number = data.data.findIndex(
-            (item: Employee) => item.id === updatedData.id
+            (item: Customer) => item.id === updatedData.id
           );
 
           if (itemIndex === -1) {
@@ -132,7 +130,7 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
 
       queryClient.invalidateQueries({
         predicate: ({ queryKey }) =>
-          queryKey[0] === 'employee' && queryKey[3] !== '',
+          queryKey[0] === 'customer' && queryKey[3] !== '',
       });
     },
   });
@@ -163,10 +161,10 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
         dataToSend.phoneNumber = dataToSend.phoneNumber.replace(/\D/g, '');
         dataToSend.address.cep = dataToSend.address.cep.replace(/\D/g, '');
 
-        if (employeeToEdit) {
-          editEmployee
+        if (customerToEdit) {
+          editCustomer
             .mutateAsync({
-              ...employeeToEdit,
+              ...customerToEdit,
               ...dataToSend,
             })
             .then(() => {
@@ -174,7 +172,7 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
             })
             .catch(() => {});
         } else {
-          createEmployee
+          createCustomer
             .mutateAsync(dataToSend)
             .then(() => {
               handleCancel();
@@ -188,29 +186,28 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
   };
 
   useEffect(() => {
-    if (employeeToEdit) {
+    if (customerToEdit) {
       setIsFirstStepValid(true);
       setIsSecondStepValid(true);
 
       setFieldsValue({
-        id: employeeToEdit.id,
-        name: employeeToEdit.name,
-        document: employeeToEdit.document,
-        birthdate: dayjs(employeeToEdit.birthdate) as any,
-        email: employeeToEdit.email,
-        phoneNumber: employeeToEdit.phoneNumber,
-        address: employeeToEdit.address,
-        assignmentId: employeeToEdit.assignmentId,
+        id: customerToEdit.id,
+        name: customerToEdit.name,
+        document: customerToEdit.document,
+        birthdate: dayjs(customerToEdit.birthdate) as any,
+        email: customerToEdit.email,
+        phoneNumber: customerToEdit.phoneNumber,
+        address: customerToEdit.address,
       });
     }
-  }, [employeeToEdit]);
+  }, [customerToEdit]);
 
   return (
     <StyledModal
       centered
       open={open}
       onCancel={handleCancel}
-      title={`${employeeToEdit ? 'Editar' : 'Adicionar'} colaborador`}
+      title={`${customerToEdit ? 'Editar' : 'Adicionar'} Cliente`}
       footer={[
         <Button
           danger
@@ -222,7 +219,7 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
         </Button>,
         <Button
           key="submit"
-          loading={createEmployee.isLoading || editEmployee.isLoading}
+          loading={createCustomer.isLoading || editCustomer.isLoading}
           type="primary"
           disabled={
             (!isFirstStepValid && step === 0) ||
@@ -230,7 +227,7 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
           }
           style={{ width: 'calc(50% - 4px)' }}
           onClick={() => {
-            if (step < 2) {
+            if (step < 1) {
               setStep(step + 1);
 
               return;
@@ -239,7 +236,7 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
             handleSubmit();
           }}
         >
-          {step < 2 ? 'Próximo' : 'Salvar'}
+          {step < 1 ? 'Próximo' : 'Salvar'}
         </Button>,
       ]}
     >
@@ -251,31 +248,22 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
         items={[
           {
             title: 'Dados pessoais',
-            disabled: createEmployee.isLoading || editEmployee.isLoading,
+            disabled: createCustomer.isLoading || editCustomer.isLoading,
             icon: <UserOutlined />,
           },
           {
             title: 'Endereço',
             disabled:
               !isFirstStepValid ||
-              createEmployee.isLoading ||
-              editEmployee.isLoading,
+              createCustomer.isLoading ||
+              editCustomer.isLoading,
             icon: <EnvironmentFilled />,
-          },
-          {
-            title: 'Atribuições',
-            disabled:
-              !isFirstStepValid ||
-              !isSecondStepValid ||
-              createEmployee.isLoading ||
-              editEmployee.isLoading,
-            icon: <IdcardOutlined />,
           },
         ]}
       />
 
       {step === 0 && (
-        <EmployeePersonalInfoStep
+        <CustomerPersonalInfoStep
           form={form}
           onStepValidate={(isValid) => setIsFirstStepValid(isValid)}
           // onStepValidate={(isValid) => setIsFirstStepValid(isValid)}
@@ -283,13 +271,10 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
       )}
 
       {step === 1 && (
-        <EmployeeAddressStep
-          employeeForm={form}
+        <CustomerAddressStep
+          customerForm={form}
           onStepValidate={(isValid) => setIsSecondStepValid(isValid)}
         />
-      )}
-      {step === 2 && (
-        <EmployeeRolesStep form={form} disabled={createEmployee.isLoading} />
       )}
     </StyledModal>
   );

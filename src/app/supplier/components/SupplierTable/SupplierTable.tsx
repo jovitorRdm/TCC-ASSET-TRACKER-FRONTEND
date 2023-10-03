@@ -1,20 +1,23 @@
+import { supplierService } from '@/services/supplier';
 import { GenericStatus } from '@/types/genericStatus';
+import { Supplier } from '@/types/supplier';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { EditOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { Button, Divider, Modal, Table, Tag, Tooltip } from 'antd';
 import { ClientComponentLoader } from '@/components/ClientComponentLoader';
 import { StatusButton } from '@/components/StatusButton';
-import { Employee } from '@/types/employee';
-import { employeeService } from '@/services/employee';
-import dayjs from 'dayjs';
-import { formatCpf } from '@/helpers/utils/formatCpf';
 import { formatPhoneNumber } from '@/helpers/utils/formatPhoneNumber';
+import { formatCpf } from '@/helpers/utils/formatCpf';
+import dayjs from 'dayjs';
 import styled from 'styled-components';
 
 const TableContainer = styled.div`
   border-radius: 8px;
   overflow: auto;
   min-height: 529px;
+
+  /* filter: drop-shadow(0px 2px 8px rgba(0, 0, 0, 0.15)); */
+
   & > div {
     min-width: 750px;
 
@@ -24,13 +27,13 @@ const TableContainer = styled.div`
   }
 `;
 
-interface EmployeeTableProps {
-  employee: Employee[];
-  onEdit: (employee: Employee) => void;
+interface SupplierTableProps {
+  supplier: Supplier[];
+  onEdit: (supplier: Supplier) => void;
 }
 
-export const EmployeeTable: React.FC<EmployeeTableProps> = ({
-  employee,
+export const SupplierTable: React.FC<SupplierTableProps> = ({
+  supplier,
   onEdit,
 }) => {
   const queryClient = useQueryClient();
@@ -38,8 +41,8 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
 
   const changeStatus = useMutation({
     mutationFn: (params: any) =>
-      employeeService.changeStatus(params.id, params.status),
-    onSuccess: () => queryClient.invalidateQueries(['employee']),
+      supplierService.changeStatus(params.id, params.status),
+    onSuccess: () => queryClient.invalidateQueries(['supplier']),
   });
 
   const handleChangeStatus = (id: string, status: GenericStatus) => {
@@ -79,26 +82,10 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
           pagination={false}
           columns={[
             {
-              title: 'COLABORADORES',
+              title: 'FORNECEDORES',
               dataIndex: 'name',
               key: 'name',
               align: 'left',
-            },
-            {
-              title: 'ATRIBUIÇÃO',
-              key: 'name',
-              align: 'left',
-              render: (_, record) => (
-                <Tag
-                  style={{
-                    textTransform: 'uppercase',
-                    fontWeight: 600,
-                    padding: '4px 8px',
-                  }}
-                >
-                  {record.assignment.name}
-                </Tag>
-              ),
             },
             {
               dataIndex: 'actions',
@@ -128,15 +115,14 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
               ),
             },
           ]}
-          dataSource={employee}
+          dataSource={supplier}
           expandable={{
             expandedRowRender: ({
               document,
               birthdate,
               email,
               phoneNumber,
-              address: { cep, street, number, neighborhood, city, state },
-              assignment: { name },
+              address: { street, number, neighborhood, city, state },
             }) => (
               <div style={{ paddingLeft: 8 }}>
                 <div

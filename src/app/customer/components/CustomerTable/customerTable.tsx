@@ -118,7 +118,7 @@ export const CustomerTable: React.FC<CustomerTableProps> = ({
           dataSource={customer}
           expandable={{
             expandedRowRender: ({
-              cpf,
+              document,
               birthdate,
               email,
               phoneNumber,
@@ -134,7 +134,7 @@ export const CustomerTable: React.FC<CustomerTableProps> = ({
                   }}
                 >
                   <p>
-                    <strong>CPF:</strong> {formatCpf(cpf)}
+                    <strong>CPF:</strong> {formatCpf(document)}
                   </p>
 
                   <p>

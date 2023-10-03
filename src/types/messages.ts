@@ -23,4 +23,5 @@ export enum ErrorMessages {
     MSGE14 = 'Acesso não autorizado',
     MSGE15 = 'A lista não deve possuir itens duplicados',
     MSGE16 = 'Cadastro indisponível',
+    MSGE17 = 'CNPJ inválido',
   }

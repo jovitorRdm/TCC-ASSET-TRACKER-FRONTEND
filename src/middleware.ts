@@ -4,7 +4,15 @@ import { getAuthorizedRoutesByRoles } from './helpers/getAuthorizedRoutesByRoles
 import { AccountType } from './types/accountType';
 
 export const config = {
-  matcher: '/:path*',
+  matcher: [
+    `/assignment`,
+    `/event-type`,
+    `/employee`,
+    `/customer`,
+    `/serviceItem`,
+    `/product`,
+    `/home`,
+  ],
 };
 
 export function middleware(req: NextRequest) {

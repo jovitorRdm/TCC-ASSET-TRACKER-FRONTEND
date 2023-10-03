@@ -3,13 +3,11 @@ import { GenericStatus } from "./genericStatus";
 
 export interface CreateCustomerRequestData {
     name: string;
-    cpf: string;
+    document: string;
     birthdate: string
     phoneNumber: string
     email: string
-    password: string
     address: Address
-
 }
 
 export interface Customer extends CreateCustomerRequestData {
