@@ -67,18 +67,18 @@ const H1Title = styled.h1`
   width: 100%;
 `;
 
-interface PageProductHeaderProps {
+interface PageHeaderProps {
   statusFilter: GenericStatus | 'all';
   onChangeStatusFilter: (status: GenericStatus | 'all') => void;
   onChangeSearch: (search: string) => void;
-  handleOpenProductDialogForm: () => void;
+  handleOpenFiscalProductDialogForm: () => void;
 }
 
-const PageProductHeader: React.FC<PageProductHeaderProps> = ({
+const PageHeader: React.FC<PageHeaderProps> = ({
   statusFilter,
   onChangeStatusFilter,
   onChangeSearch,
-  handleOpenProductDialogForm,
+  handleOpenFiscalProductDialogForm,
 }) => {
   const debouncedSearch = useCallback(
     debounce((value: string) => {
@@ -91,12 +91,12 @@ const PageProductHeader: React.FC<PageProductHeaderProps> = ({
   return (
     <Container>
       <TitleHeader>
-        <H1Title>Produtos</H1Title>
+        <H1Title>COMPRAS</H1Title>
       </TitleHeader>
       <LeftContent>
         <Input
           className="Input"
-          placeholder="Pesquisar por Produto"
+          placeholder="Pesquisar Nota fiscal"
           suffix={<SearchOutlined />}
           onChange={(e) => debouncedSearch(e.target.value)}
         />
@@ -120,7 +120,7 @@ const PageProductHeader: React.FC<PageProductHeaderProps> = ({
         <Button
           style={{ backgroundColor: '#409322' }}
           icon={<PlusCircleOutlined />}
-          onClick={() => handleOpenProductDialogForm()}
+          onClick={() => handleOpenFiscalProductDialogForm()}
           type="primary"
         >
           ADICIONAR
@@ -130,4 +130,4 @@ const PageProductHeader: React.FC<PageProductHeaderProps> = ({
   );
 };
 
-export default PageProductHeader;
+export default PageHeader;

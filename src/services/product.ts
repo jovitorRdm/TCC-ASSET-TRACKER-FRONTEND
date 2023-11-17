@@ -1,8 +1,8 @@
 import { PaginatedDataResponse, PaginatedRequestParams } from "@/types/paginatedData";
 import Api from "./api";
-import { InputProductRequestData, Product } from "@/types/product";
 import { SuccessMessages } from "@/types/messages";
 import { GenericStatus } from "@/types/genericStatus";
+import { InputProductRequestData, Product } from "@/types";
 
 const baseUrl = '/product';
 async function getPaginated(

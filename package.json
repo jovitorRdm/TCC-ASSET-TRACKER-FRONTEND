@@ -26,6 +26,7 @@
     "next": "^13.2.4",
     "react": "^18.2.0",
     "react-dom": "18.2.0",
+    "react-input-mask": "^2.0.4",
     "react-toastify": "^9.1.2",
     "styled-components": "^6.0.0-beta.2",
     "sweetalert2": "^11.7.3",
@@ -34,6 +35,7 @@
   },
   "devDependencies": {
     "@types/antd": "^1.0.0",
-    "@types/lodash.debounce": "^4.0.7"
+    "@types/lodash.debounce": "^4.0.7",
+    "@types/react-input-mask": "^3.0.5"
   }
 }

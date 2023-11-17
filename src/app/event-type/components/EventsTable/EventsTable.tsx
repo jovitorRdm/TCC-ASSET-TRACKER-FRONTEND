@@ -63,13 +63,6 @@ export const EventsTable: React.FC<EventTableProps> = ({ events, onEdit }) => {
             key: 'name',
             align: 'left',
           },
-          // {
-          //   title: 'Descrição',
-          //   dataIndex: 'description',
-          //   key: 'description',
-          //   align: 'left',
-          //   ellipsis: true,
-          // },
           {
             dataIndex: 'actions',
             key: 'actions',

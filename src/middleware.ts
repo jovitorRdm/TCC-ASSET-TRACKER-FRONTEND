@@ -10,8 +10,10 @@ export const config = {
     `/employee`,
     `/customer`,
     `/serviceItem`,
-    `/product`,
+    `/purchase`,
     `/home`,
+    `/product`,
+    `/fiscalProduct`,
   ],
 };
 

@@ -82,7 +82,7 @@ export const CustomerTable: React.FC<CustomerTableProps> = ({
           pagination={false}
           columns={[
             {
-              title: 'CLIENTES',
+              title: 'Nome',
               dataIndex: 'name',
               key: 'name',
               align: 'left',

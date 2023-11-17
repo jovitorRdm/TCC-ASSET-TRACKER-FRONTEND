@@ -79,7 +79,7 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
           pagination={false}
           columns={[
             {
-              title: 'COLABORADORES',
+              title: 'Nome',
               dataIndex: 'name',
               key: 'name',
               align: 'left',

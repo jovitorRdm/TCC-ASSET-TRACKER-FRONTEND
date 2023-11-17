@@ -1,17 +1,15 @@
 'use client';
-
-import { productService } from '@/services/product';
-import { GenericStatus } from '@/types/genericStatus';
-import { Product } from '@/types/product';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Layout, Pagination } from 'antd';
-import { useState } from 'react';
 import styled from 'styled-components';
-import PageHeader from './components/ProductHeader/ProductHeader';
-import { ProductDialogForm } from './components/ProductDialogForm/ProductDialogForm';
-import { ProductTable } from './components/ProductTable/ProductTable';
 import Headers from '@/app/components/Headers/Headers';
 import SideBar from '@/app/components/Sidebar/Sidebar';
+import { GenericStatus, Product } from '@/types';
+import { productService } from '@/services/product';
+import { ProductDialogForm } from './components/ProductDialogForm/ProductDialogForm';
+import PageProductHeader from './components/ProductHeader/ProductHeader';
+import { ProductTable } from './components/ProductTable/ProductTable';
 
 const LayoutStyled = styled(Layout)`
   height: 100vh;
@@ -28,7 +26,7 @@ const Product: React.FC = () => {
     'all'
   );
 
-  const { data } = useQuery(['product', page, statusFilter, search], {
+  const { data } = useQuery(['product', statusFilter, search], {
     queryFn: () =>
       productService.getPaginated({
         filterByStatus: statusFilter !== 'all' ? statusFilter : undefined,
@@ -48,7 +46,7 @@ const Product: React.FC = () => {
     setShowProductDialogForm(true);
   };
 
-  const handleCloseProductDialogForm = () => {
+  const hadleCloseProductDialogForm = () => {
     setShowProductDialogForm(false);
 
     if (productToEdit) {
@@ -60,8 +58,8 @@ const Product: React.FC = () => {
     <>
       <ProductDialogForm
         open={showProductDialogForm}
-        serviceItemToEdit={productToEdit}
-        onClose={handleCloseProductDialogForm}
+        productToEdit={productToEdit}
+        onClose={hadleCloseProductDialogForm}
       />
 
       <LayoutStyled>
@@ -70,7 +68,7 @@ const Product: React.FC = () => {
           <SideBar />
           <Layout>
             <Content style={{ padding: 10, margin: '0 16px' }}>
-              <PageHeader
+              <PageProductHeader
                 onChangeStatusFilter={(value) => setStatusFilter(value)}
                 onChangeSearch={(value) => setSearch(value)}
                 statusFilter={statusFilter}
@@ -78,10 +76,9 @@ const Product: React.FC = () => {
               />
 
               <ProductTable
-                products={data?.data ?? []}
+                product={data?.data ?? []}
                 onEdit={handleOpenProductDialogForm}
               />
-
               {data && (
                 <Pagination
                   style={{ padding: '10px', textAlign: 'center' }}

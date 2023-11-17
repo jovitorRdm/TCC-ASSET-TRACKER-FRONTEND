@@ -1,14 +1,11 @@
 'use client';
-
-import { assignmentService } from '@/services/assignment';
 import { productService } from '@/services/product';
-import { GenericStatus } from '@/types/genericStatus';
+import { InputProductRequestData, Product } from '@/types';
 import { ErrorMessages } from '@/types/messages';
-import { InputProductRequestData, Product } from '@/types/product';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Button, Form, Input, Modal, Select } from 'antd';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Button, Form, Input, InputNumber, Modal, Select } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import styled from 'styled-components';
 import Swal from 'sweetalert2';
 
@@ -49,20 +46,20 @@ const StyledModal = styled(Modal)`
 
 interface ProductDialogFormProps {
   open: boolean;
-  serviceItemToEdit?: Product;
+  productToEdit?: Product;
   onClose: () => void;
 }
 
 export const ProductDialogForm: React.FC<ProductDialogFormProps> = ({
   open,
-  serviceItemToEdit,
+  productToEdit,
   onClose,
 }) => {
   const queryClient = useQueryClient();
 
   const [form] = Form.useForm();
 
-  const { resetFields, setFieldsValue, validateFields, getFieldsValue } = form;
+  const { resetFields, setFieldsValue, validateFields, setFieldValue } = form;
 
   const createProduct = useMutation({
     mutationFn: (data: InputProductRequestData) => productService.create(data),
@@ -72,7 +69,7 @@ export const ProductDialogForm: React.FC<ProductDialogFormProps> = ({
   });
 
   const editProduct = useMutation({
-    mutationFn: (data: InputProductRequestData) => productService.update(data),
+    mutationFn: (data: Product) => productService.update(data),
     onSuccess: () => {
       queryClient.invalidateQueries(['product']);
     },
@@ -87,23 +84,13 @@ export const ProductDialogForm: React.FC<ProductDialogFormProps> = ({
     onClose();
   };
 
-  const [search, setSearch] = useState('');
-
-  const { data } = useQuery(['assignments', 1, 'active', search], {
-    queryFn: () =>
-      assignmentService.getPaginated({
-        filterByStatus: GenericStatus.active,
-        query: search,
-      }),
-  });
-
   const handleSubmit = () => {
     validateFields()
       .then((data) => {
-        if (serviceItemToEdit) {
+        if (productToEdit) {
           editProduct
             .mutateAsync({
-              ...serviceItemToEdit,
+              ...productToEdit,
               ...data,
             })
             .then(() => {
@@ -125,25 +112,24 @@ export const ProductDialogForm: React.FC<ProductDialogFormProps> = ({
   };
 
   useEffect(() => {
-    if (serviceItemToEdit) {
+    if (productToEdit) {
       setFieldsValue({
-        name: serviceItemToEdit.name,
-        description: serviceItemToEdit.description,
-        productValue: serviceItemToEdit.productValue,
-        productQuantity: serviceItemToEdit.productQuantity,
-        assignments:
-          serviceItemToEdit.assignments.map((assignment) => assignment.id) ||
-          [],
+        name: productToEdit.name,
+        description: productToEdit.description,
+        measurementUnit: productToEdit.measurementUnit,
+        consumptionPerPerson: productToEdit.consumptionPerPerson,
+        value: productToEdit.value,
+        quantity: productToEdit.quantity,
       });
     }
-  }, [serviceItemToEdit]);
+  }, [productToEdit]);
 
   return (
     <StyledModal
       centered
       open={open}
       onCancel={handleCancel}
-      title={`${serviceItemToEdit ? 'Editar' : 'Adicionar'} Produto`}
+      title={`${productToEdit ? 'Editar' : 'Adicionar'} Tipo de Produto`}
       footer={[
         <Button
           danger
@@ -167,11 +153,14 @@ export const ProductDialogForm: React.FC<ProductDialogFormProps> = ({
       <Form
         layout="vertical"
         size="middle"
-        disabled={createProduct.isLoading || editProduct.isLoading}
         form={form}
         initialValues={{
           name: '',
           description: '',
+          measurementUnit: '',
+          consumptionPerPerson: 0,
+          value: 0,
+          quantity: 0,
         }}
       >
         <Form.Item
@@ -184,39 +173,11 @@ export const ProductDialogForm: React.FC<ProductDialogFormProps> = ({
             { type: 'string', max: 120, message: ErrorMessages.MSGE09 },
           ]}
         >
-          <Input size="large" placeholder="Dê um nome para o Produto..." />
-        </Form.Item>
-        <Form.Item
-          required
-          label="Atribuição por Serviço"
-          name="assignments"
-          rules={[{ required: true, message: '' }]}
-        >
-          <Select
-            showSearch
-            mode="multiple"
+          <Input
             size="large"
-            optionFilterProp="children"
-            placeholder="Selecione uma atribuição..."
-            options={data?.data.map((assignments) => ({
-              label: assignments.name,
-              value: assignments.id,
-            }))}
-            filterOption={(input, option) =>
-              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-            }
-            onChange={(selectedAssignments) =>
-              setFieldsValue({ assignments: selectedAssignments })
-            }
-          >
-            {data?.data.map((assignment) => (
-              <Select.Option key={assignment.id} value={assignment.id}>
-                {assignment.name}
-              </Select.Option>
-            ))}
-          </Select>
+            placeholder="Escreva um nome para o tipo de produto..."
+          />
         </Form.Item>
-
         <Form.Item
           required
           label="Descrição"
@@ -230,7 +191,7 @@ export const ProductDialogForm: React.FC<ProductDialogFormProps> = ({
             showCount
             size="large"
             maxLength={500}
-            placeholder="Escreva a descrição do Produto aqui..."
+            placeholder="Escreva uma descrição para o tipo de produto..."
             autoSize={{ minRows: 2, maxRows: 5 }}
           />
         </Form.Item>
@@ -244,11 +205,41 @@ export const ProductDialogForm: React.FC<ProductDialogFormProps> = ({
             justifyContent: 'space-between',
           }}
         >
-          <Form.Item required label="Quantidade" name="productQuantity">
-            <Input size="large" placeholder="Quantidade de Produtos..." />
+          <Form.Item
+            label="Unidade de Medida"
+            required
+            name={'measurementUnit'}
+          >
+            <Select
+              placeholder="Selecione uma opção"
+              style={{ width: '205px' }}
+              onChange={(value) => {
+                setFieldValue('', value);
+              }}
+              options={[
+                { value: 'unit', label: 'Unidade' },
+                { value: 'package', label: 'Pacote' },
+                { value: 'kilogram', label: 'KG.' },
+                { value: 'liter', label: 'Litro' },
+                { value: 'meter', label: 'Metro' },
+              ]}
+            />
           </Form.Item>
-          <Form.Item required label="Valor do Produto" name="productValue">
-            <Input size="large" placeholder="Valor pago por Produto..." />
+          <Form.Item
+            label="Serve por Unidade"
+            required
+            name="consumptionPerPerson"
+            style={{ width: '220px' }}
+            rules={[
+              { required: true, message: '' },
+              { type: 'number', min: 1, message: ErrorMessages.MSGE10 },
+            ]}
+          >
+            <InputNumber
+              style={{ width: '100%' }}
+              placeholder="valor pago em Reais"
+              step={1.0}
+            />
           </Form.Item>
         </div>
       </Form>

@@ -53,6 +53,20 @@ const RightContent = styled.div`
   }
 `;
 
+const TitleHeader = styled.div`
+  width: 100%;
+  min-width: 43px;
+`;
+
+const H1Title = styled.h1`
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 36px;
+  text-transform: uppercase;
+  color: rgb(102, 90, 9);
+  width: 100%;
+`;
+
 interface PageHeaderProps {
   statusFilter: GenericStatus | 'all';
   onChangeStatusFilter: (status: GenericStatus | 'all') => void;
@@ -76,6 +90,9 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   );
   return (
     <Container>
+      <TitleHeader>
+        <H1Title>Serviços</H1Title>
+      </TitleHeader>
       <LeftContent>
         <Input
           className="Input"

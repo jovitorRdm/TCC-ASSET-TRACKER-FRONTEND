@@ -6,7 +6,6 @@ import { ClientComponentLoader } from '@/components/ClientComponentLoader';
 import { StatusButton } from '@/components/StatusButton';
 import { ServiceItem } from '@/types/serviceItem';
 import { servicesItemService } from '@/services/serviceItem';
-import { Assignment } from '@/types/assignment';
 
 interface ServicesItemTableProps {
   services: ServiceItem[];
@@ -62,18 +61,11 @@ export const ServicesItemTable: React.FC<ServicesItemTableProps> = ({
         pagination={false}
         columns={[
           {
-            title: 'SERVIÇOS',
+            title: 'Nome',
             dataIndex: 'name',
             key: 'name',
             align: 'left',
           },
-          // {
-          //   title: 'Descrição',
-          //   dataIndex: 'description',
-          //   key: 'description',
-          //   align: 'left',
-          //   ellipsis: true,
-          // },
           {
             dataIndex: 'actions',
             key: 'actions',
@@ -106,27 +98,25 @@ export const ServicesItemTable: React.FC<ServicesItemTableProps> = ({
         dataSource={services}
         expandable={{
           expandedRowRender: ({ description, assignments }) => (
-            <div style={{ paddingLeft: 8 }}>
-              <span style={{ paddingLeft: '40px' }}>
-                <strong>Descrição:</strong> {`${description}`} <br />
-                <strong style={{ paddingLeft: '40px', listStyle: 'none' }}>
-                  Atrubuições Requeridas:{' '}
-                </strong>
-                {assignments && assignments.length > 0 ? (
-                  <span>
-                    {assignments.map((assignment) => (
-                      <Tag
-                        style={{ textTransform: 'uppercase', fontWeight: 700 }}
-                        key={assignment.id}
-                      >
-                        {assignment.name}
-                      </Tag>
-                    ))}
-                  </span>
-                ) : (
-                  <p>Nenhuma atribuição encontrada.</p>
-                )}
-              </span>
+            <div>
+              <strong>Descrição:</strong> {`${description}`} <br />
+              <strong style={{ listStyle: 'none' }}>
+                Atrubuições Requeridas:{' '}
+              </strong>
+              {assignments && assignments.length > 0 ? (
+                <span>
+                  {assignments.map((assignment) => (
+                    <Tag
+                      style={{ textTransform: 'uppercase', fontWeight: 700 }}
+                      key={assignment.id}
+                    >
+                      {assignment.name}
+                    </Tag>
+                  ))}
+                </span>
+              ) : (
+                <p>Nenhuma atribuição encontrada.</p>
+              )}
             </div>
           ),
         }}

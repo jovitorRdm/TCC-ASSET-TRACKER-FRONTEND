@@ -65,7 +65,7 @@ export const AssignmentsTable: React.FC<AssignmentTableProps> = ({
         pagination={false}
         columns={[
           {
-            title: 'ATRIBUIÇÕES',
+            title: 'Nome',
             dataIndex: 'name',
             key: 'name',
             align: 'left',

@@ -1,33 +1,40 @@
 'use client';
 import React from 'react';
-import { Layout } from 'antd';
+import { Image, Layout } from 'antd';
 
 const { Header } = Layout;
 
 const headerStyle: React.CSSProperties = {
   margin: '0',
-  padding: '0px 0px 0px 20px',
+  padding: '0px 0px 0px 5px',
   color: '#fff',
   backgroundColor: '#D6A07E',
+  display: 'flex',
+  height: '110px',
 };
 
 const h1Style: React.CSSProperties = {
-  fontSize: '28px',
+  fontSize: '30px',
   fontWeight: 'bold',
+  padding: ' 25px 0px 0px 0px',
+  textAlign: 'center',
   letterSpacing: '2px',
   margin: 0,
   textTransform: 'uppercase',
 };
 
+const ImageStyle: React.CSSProperties = {
+  width: '115px',
+};
+
 const Headers: React.FC = () => {
   return (
-    <>
-      <Header style={headerStyle}>
-        <h3 style={h1Style}>
-          ASSET<span style={{ color: 'black' }}>TRACKER</span>
-        </h3>
-      </Header>
-    </>
+    <Header style={headerStyle}>
+      <Image src="\img\logo.png" style={ImageStyle} />
+      <h3 style={h1Style}>
+        ASSET<span style={{ color: 'black' }}>TRACKER</span>
+      </h3>
+    </Header>
   );
 };
 

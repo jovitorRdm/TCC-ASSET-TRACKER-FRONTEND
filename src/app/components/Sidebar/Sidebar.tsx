@@ -12,6 +12,7 @@ import {
   BarsOutlined,
   TeamOutlined,
   ContactsOutlined,
+  InsertRowBelowOutlined,
 } from '@ant-design/icons';
 import Sider from 'antd/es/layout/Sider';
 import { usePathname, useRouter } from 'next/navigation';
@@ -41,10 +42,11 @@ const items: MenuItem[] = [
   getItem('Atribuição', '/assignment', <IdcardOutlined />),
   getItem('Eventos', '/event-type', <FileDoneOutlined />),
   getItem('Colaboradores', '/employee', <AuditOutlined />),
-  getItem('fornecedores', '/supplier', <ContactsOutlined />),
+  getItem('Fornecedores', '/supplier', <ContactsOutlined />),
   getItem('Clientes', '/customer', <TeamOutlined />),
   getItem('Serviços', '/serviceItem', <CoffeeOutlined />),
-  getItem('Produtos', '/product', <BarsOutlined />),
+  getItem('Produtos', '/product', <InsertRowBelowOutlined />),
+  getItem('Compras', '/fiscalProduct', <InsertRowBelowOutlined />),
 ];
 
 const SideBar: React.FC = () => {

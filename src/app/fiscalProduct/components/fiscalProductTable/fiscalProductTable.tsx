@@ -1,27 +1,49 @@
-import { StatusButton } from '@/components/StatusButton';
-import { EditOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { GenericStatus, Product } from '@/types';
+import { GenericStatus } from '@/types/genericStatus';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Button, Modal, Table, Tooltip } from 'antd';
+import { EditOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { Button, Modal, Table, Tag, Tooltip } from 'antd';
 import { ClientComponentLoader } from '@/components/ClientComponentLoader';
-import { productService } from '@/services/product';
-import { getMeasurementUnitProps } from '@/helpers/getMeasurementUnitProps';
-import { MeasurementUnit } from '@/types/measurementUnite';
+import { StatusButton } from '@/components/StatusButton';
+import { FiscalProduct } from '@/types/fiscalProduct';
+import { fiscalProductService } from '@/services/fiscalProduct';
+import dayjs from 'dayjs';
+import { Product } from '@/types';
 
-interface ProductProp {
-  product: Product[];
-  onEdit: (product: Product) => void;
+interface FiscalTableProps {
+  fiscalProduct: FiscalProduct[];
+  onEdit: (FiscalProduct: FiscalProduct) => void;
 }
 
-export const ProductTable: React.FC<ProductProp> = ({ product, onEdit }) => {
+export const FiscalProductTable: React.FC<FiscalTableProps> = ({
+  fiscalProduct,
+  onEdit,
+}) => {
   const queryClient = useQueryClient();
   const { confirm } = Modal;
 
   const changeStatus = useMutation({
     mutationFn: (params: any) =>
-      productService.changeStatus(params.id, params.status),
-    onSuccess: () => queryClient.invalidateQueries(['product']),
+      fiscalProductService.changeStatus(params.id, params.status),
+    onSuccess: () => queryClient.invalidateQueries(['fiscalProduct']),
   });
+
+  const expandedRowRender = ({ Product }: { Product: Product[] }) => (
+    <div>
+      <strong>Os produtos comprados:</strong>{' '}
+      {Product && Product.length > 0 ? (
+        Product.map((Product) => (
+          <Tag
+            style={{ textTransform: 'uppercase', fontWeight: 700 }}
+            key={Product.id}
+          >
+            {Product.name}
+          </Tag>
+        ))
+      ) : (
+        <p>Nenhum produto encontrado.</p>
+      )}
+    </div>
+  );
 
   const handleChangeStatus = (id: string, status: GenericStatus) => {
     confirm({
@@ -60,20 +82,32 @@ export const ProductTable: React.FC<ProductProp> = ({ product, onEdit }) => {
         columns={[
           {
             title: 'Nome',
-            dataIndex: 'name',
-            key: 'name',
+            dataIndex: 'supplier',
+            key: 'supplier',
             align: 'left',
+            render: (_, record) => <div>{record.supplier.name}</div>,
+          },
+
+          {
+            title: 'Data da Emissão',
+            dataIndex: 'issueDate',
+            key: 'issueDate',
+            align: 'left',
+            render: (_, record) => (
+              <div>{dayjs(record.issueDate).format('DD/MM/YYYY')}</div>
+            ),
           },
           {
-            title: 'Quantidade',
-            dataIndex: 'quantity',
-            key: 'quantity',
+            title: 'NF-E',
+            dataIndex: 'invoiceNumber',
+            key: 'invoiceNumber',
             align: 'left',
           },
           {
             dataIndex: 'actions',
-            width: 200,
             key: 'actions',
+            width: 200,
+            align: 'right',
             render: (_, record) => (
               <>
                 <StatusButton
@@ -98,29 +132,8 @@ export const ProductTable: React.FC<ProductProp> = ({ product, onEdit }) => {
             ),
           },
         ]}
-        dataSource={product}
-        expandable={{
-          expandedRowRender: ({
-            consumptionPerPerson,
-            measurementUnit,
-            description,
-            value,
-          }) => (
-            <div style={{ paddingLeft: 8 }}>
-              <span>
-                <strong>Descrição:</strong> {`${description}`}
-                <br />
-                <strong>Unidade de medida:</strong>{' '}
-                {`${getMeasurementUnitProps(measurementUnit).translated}`}
-                <br />
-                <strong>Serve por unidade:</strong> {`${consumptionPerPerson}`}
-                <br />
-                <strong>Ultimo valor Pago:</strong> {`${value} R$`}
-                <br />
-              </span>
-            </div>
-          ),
-        }}
+        dataSource={fiscalProduct}
+        expandable={{ expandedRowRender }}
       />
     </ClientComponentLoader>
   );

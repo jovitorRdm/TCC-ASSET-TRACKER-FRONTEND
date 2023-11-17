@@ -82,7 +82,7 @@ export const SupplierTable: React.FC<SupplierTableProps> = ({
           pagination={false}
           columns={[
             {
-              title: 'FORNECEDORES',
+              title: 'Nome',
               dataIndex: 'name',
               key: 'name',
               align: 'left',

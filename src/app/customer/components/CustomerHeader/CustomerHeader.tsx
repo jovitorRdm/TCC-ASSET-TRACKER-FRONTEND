@@ -44,6 +44,20 @@ const LeftContent = styled.div`
   }
 `;
 
+const TitleHeader = styled.div`
+  width: 100%;
+  min-width: 43px;
+`;
+
+const H1Title = styled.h1`
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 36px;
+  text-transform: uppercase;
+  color: rgb(102, 90, 9);
+  width: 100%;
+`;
+
 const RightContent = styled.div`
   display: flex;
   align-items: center;
@@ -76,6 +90,9 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   );
   return (
     <Container>
+      <TitleHeader>
+        <H1Title>Clientes</H1Title>
+      </TitleHeader>
       <LeftContent>
         <Input
           className="Input"

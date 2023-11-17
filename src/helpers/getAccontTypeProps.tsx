@@ -3,7 +3,6 @@ import { AccountType } from '@/types/accountType';
 type PaymentMethodProps = {
   [key in AccountType]: {
     translated: string;
-    // outras propriedades específicas de cada método de pagamento
   };
 };
 
