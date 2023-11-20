@@ -38,6 +38,7 @@ const FiscalProduct: React.FC = () => {
 
   const [fiscalProductToEdit, setFiscalProductToEdit] =
     useState<FiscalProduct>();
+
   const [showFiscalProductDialogForm, setShowFiscalProductDialogForm] =
     useState(false);
 

@@ -1,16 +1,25 @@
-import { GenericStatus } from "./genericStatus";
-import { Product } from "./product";
-import { Supplier } from "./supplier";
+import { GenericStatus } from './genericStatus';
+import { ProductEntries } from './productEntries';
+import { Supplier } from './supplier';
 
-
-export interface CreateFiscalProductRequestData{
-    supplier: Supplier;
-    invoiceNumber: string;
-    issueDate: Date;
-    Product: Product[];
+export interface FiscalProduct {
+  id?: string;
+  status: GenericStatus;
+  supplierId: string;
+  supplier: Supplier;
+  invoiceNumber: string;
+  issueDate: Date;
+  totalAmount: number;
+  productEntries: ProductEntries[];
 }
 
-export interface FiscalProduct extends CreateFiscalProductRequestData{
-    id: string;
-    status: GenericStatus;
+export interface InputFiscalProductRequestData {
+  id: string;
+  status: GenericStatus;
+  supplierId: string;
+  supplier: Supplier;
+  invoiceNumber: string;
+  issueDate: Date;
+  totalAmount: number;
+  productEntries: ProductEntries[];
 }

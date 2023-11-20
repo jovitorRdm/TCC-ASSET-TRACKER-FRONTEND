@@ -7,7 +7,6 @@ import { StatusButton } from '@/components/StatusButton';
 import { FiscalProduct } from '@/types/fiscalProduct';
 import { fiscalProductService } from '@/services/fiscalProduct';
 import dayjs from 'dayjs';
-import { Product } from '@/types';
 
 interface FiscalTableProps {
   fiscalProduct: FiscalProduct[];
@@ -27,16 +26,16 @@ export const FiscalProductTable: React.FC<FiscalTableProps> = ({
     onSuccess: () => queryClient.invalidateQueries(['fiscalProduct']),
   });
 
-  const expandedRowRender = ({ Product }: { Product: Product[] }) => (
+  const expandedRowRender = ({ productEntries }: FiscalProduct) => (
     <div>
       <strong>Os produtos comprados:</strong>{' '}
-      {Product && Product.length > 0 ? (
-        Product.map((Product) => (
+      {productEntries && productEntries.length > 0 ? (
+        productEntries.map((productEntries) => (
           <Tag
             style={{ textTransform: 'uppercase', fontWeight: 700 }}
-            key={Product.id}
+            key={productEntries.id}
           >
-            {Product.name}
+            {productEntries.name}
           </Tag>
         ))
       ) : (
@@ -82,7 +81,7 @@ export const FiscalProductTable: React.FC<FiscalTableProps> = ({
         columns={[
           {
             title: 'Nome',
-            dataIndex: 'supplier',
+            dataIndex: 'supplierId',
             key: 'supplier',
             align: 'left',
             render: (_, record) => <div>{record.supplier.name}</div>,
@@ -101,6 +100,12 @@ export const FiscalProductTable: React.FC<FiscalTableProps> = ({
             title: 'NF-E',
             dataIndex: 'invoiceNumber',
             key: 'invoiceNumber',
+            align: 'left',
+          },
+          {
+            title: 'Valor Total da Nota',
+            dataIndex: 'totalAmount',
+            key: 'totalAmount',
             align: 'left',
           },
           {

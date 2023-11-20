@@ -2,7 +2,7 @@ import Api from './api';
 import { SuccessMessages } from '@/types/messages';
 import { GenericStatus } from '@/types/genericStatus';
 import { PaginatedDataResponse, PaginatedRequestParams } from '@/types/paginatedData';
-import { CreateFiscalProductRequestData, FiscalProduct } from '@/types/fiscalProduct';
+import {  FiscalProduct, InputFiscalProductRequestData } from '@/types/fiscalProduct';
 
 const baseUrl = '/fiscalProduct';
 
@@ -12,7 +12,7 @@ async function getPaginated(
     return Api.get(baseUrl, { params, headers:{authHeader: true}  }).then((res) => res.data);
 }
 
-async function create(data: CreateFiscalProductRequestData): Promise<FiscalProduct> {
+async function create(data: InputFiscalProductRequestData): Promise<FiscalProduct> {
     return Api.post(baseUrl, data, {
         headers: { authHeader: true,'success-message': SuccessMessages.MSGS03 },
     }).then((res) => res.data);

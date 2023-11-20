@@ -1,16 +1,21 @@
 import { fiscalProductService } from '@/services/fiscalProduct';
-import { ErrorMessages, GenericStatus } from '@/types';
-import { FiscalProduct } from '@/types/fiscalProduct';
+import { ErrorMessages, GenericStatus, Product } from '@/types';
+import {
+  FiscalProduct,
+  InputFiscalProductRequestData,
+} from '@/types/fiscalProduct';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Button,
   DatePicker,
+  Empty,
   Form,
   Input,
   InputNumber,
   Modal,
   Select,
   Space,
+  Statistic,
 } from 'antd';
 import { Row, Col } from 'antd';
 import React, { useEffect, useState } from 'react';
@@ -21,7 +26,7 @@ import 'dayjs/locale/pt-br';
 dayjs.locale('pt-br');
 import { supplierService } from '@/services/supplier';
 import { productService } from '@/services/product';
-import { log } from 'console';
+import { ProductEntries } from '@/types/productEntries';
 
 const StyledModal = styled(Modal)`
   @media (max-width: 600px) {
@@ -68,24 +73,56 @@ export const FiscalProductDialogForm: React.FC<
   FiscalProductDialogFormProps
 > = ({ open, fiscalProductToEdit, onClose }) => {
   const queryClient = useQueryClient();
-
   const [form] = Form.useForm();
-  const { resetFields, setFieldsValue, validateFields, getFieldsValue } = form;
+
+  const [search, setSearch] = useState('');
+  const [totalAmount, setTotalAmount] = useState(
+    fiscalProductToEdit?.totalAmount || 0
+  );
+  const { resetFields, setFieldsValue, setFieldValue, validateFields } = form;
+  const productEntries: ProductEntries[] =
+    Form.useWatch('productEntries', form) ?? [];
+
+  useEffect(() => {
+    setTotalAmount(
+      productEntries.reduce(
+        (prev, curr) => prev + (curr?.quantity || 0) * (curr?.value || 0),
+        0
+      )
+    );
+  }, [productEntries]);
 
   const createFiscalProduct = useMutation({
-    mutationFn: (data: FiscalProduct) => fiscalProductService.create(data),
+    mutationFn: (data: InputFiscalProductRequestData) =>
+      fiscalProductService.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries(['fiscalProduct']);
     },
   });
 
   const editFiscalProduct = useMutation({
-    mutationFn: (data: FiscalProduct) => fiscalProductService.update(data),
+    mutationFn: (data: InputFiscalProductRequestData) =>
+      fiscalProductService.update(data),
     onSuccess: () => {
       queryClient.invalidateQueries(['fiscalProduct']);
     },
   });
 
+  const { data: supplierData } = useQuery(['supplier', 1, 'active', search], {
+    queryFn: () =>
+      supplierService.getPaginated({
+        filterByStatus: GenericStatus.active,
+        query: search,
+      }),
+  });
+
+  const { data: productData } = useQuery(['Product', 1, 'active'], {
+    queryFn: () =>
+      productService.getPaginated({
+        filterByStatus: GenericStatus.active,
+        query: search,
+      }),
+  });
   const handleCancel = () => {
     if (createFiscalProduct.isLoading || editFiscalProduct.isLoading) {
       return;
@@ -95,35 +132,16 @@ export const FiscalProductDialogForm: React.FC<
     onClose();
   };
 
-  const [search, setSearch] = useState('');
-
-  const { data } = useQuery(['supplier', 1, 'active', search], {
-    queryFn: () =>
-      supplierService.getPaginated({
-        filterByStatus: GenericStatus.active,
-        query: search,
-      }),
-  });
-
-  const { data: productData } = useQuery(['products', 1, 'active'], {
-    queryFn: () =>
-      productService.getPaginated({
-        filterByStatus: GenericStatus.active,
-        query: search,
-      }),
-  });
-
-  console.log('product:', productData);
-  console.log('Supplier:', data);
-
   const handleSubmit = () => {
     validateFields()
       .then((data) => {
+        console.log(data);
         if (fiscalProductToEdit) {
           editFiscalProduct
             .mutateAsync({
               ...fiscalProductToEdit,
               ...data,
+              totalAmount,
             })
             .then(() => {
               handleCancel();
@@ -131,7 +149,7 @@ export const FiscalProductDialogForm: React.FC<
             .catch(() => {});
         } else {
           createFiscalProduct
-            .mutateAsync(data)
+            .mutateAsync({ ...data, totalAmount })
             .then(() => {
               handleCancel();
             })
@@ -147,17 +165,13 @@ export const FiscalProductDialogForm: React.FC<
     if (fiscalProductToEdit) {
       setFieldsValue({
         ...fiscalProductToEdit,
+        supplierId: fiscalProductToEdit.supplierId,
+        invoiceNumber: fiscalProductToEdit.invoiceNumber,
+        totalValue: fiscalProductToEdit.totalAmount,
         issueDate: dayjs(fiscalProductToEdit.issueDate),
-        supplier:
-          fiscalProductToEdit.supplier?.name || fiscalProductToEdit.supplier,
-        products: fiscalProductToEdit.Product.map((product) => ({
-          product: product.id,
-          quantity: product.quantity,
-          value: product.value,
-        })),
       });
     }
-  }, [fiscalProductToEdit, setFieldsValue, productData]);
+  }, [fiscalProductToEdit]);
 
   return (
     <StyledModal
@@ -196,33 +210,24 @@ export const FiscalProductDialogForm: React.FC<
         <Form.Item
           required
           label="Fornecedor"
-          name="supplier"
+          name="supplierId"
           rules={[{ required: true, message: '' }]}
         >
           <Select
             showSearch
             size="large"
             placeholder="Selecione um Fornecedor..."
-            options={data?.data.map((supplier) => ({
-              label: supplier.name,
-              value: supplier.id,
-            }))}
-            filterOption={(input, option) =>
-              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-            }
-            onChange={(selectedsupplier) =>
-              setFieldsValue({ supplier: selectedsupplier })
-            }
+            onSearch={setSearch}
           >
-            {data?.data.map((assignment) => (
-              <Select.Option key={assignment.id} value={assignment.id}>
-                {assignment.name}
+            {supplierData?.data.map((supplier) => (
+              <Select.Option key={supplier.id} value={supplier.id}>
+                {supplier.name}
               </Select.Option>
             ))}
           </Select>
         </Form.Item>
         <Row>
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={6}>
             <Form.Item
               required
               label="Data de Emissão"
@@ -244,87 +249,127 @@ export const FiscalProductDialogForm: React.FC<
               <DatePicker size="large" format="DD/MM/YYYY" />
             </Form.Item>
           </Col>
-          <Col sm={12}>
+          <Col xs={24} sm={8}>
+            <Form.Item required label="Total da Nota" name="totalValue">
+              <Input
+                style={{ width: '120px' }}
+                value={totalAmount}
+                readOnly
+                disabled
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} sm={6}>
             <Form.Item
               required
               label="NF - e"
               name="invoiceNumber"
+              style={{ width: '300px' }}
               rules={[{ required: true, message: '' }]}
             >
               <Input size="large" />
             </Form.Item>
           </Col>
-          <Form.List name="products">
+          <Form.List name="productEntries">
             {(fields, { add, remove }) => (
               <>
-                {fields.map(({ key, name, ...restField }) => (
-                  <div
-                    key={key}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      width: '100%',
-                      justifyContent: 'space-between',
-                    }}
-                  >
-                    <Space
+                {fields.map(({ key, name, ...restField }) => {
+                  const itemQuantity = form.getFieldValue([
+                    'productEntries',
+                    name,
+                    'quantity',
+                  ]);
+                  const itemValue = form.getFieldValue([
+                    'productEntries',
+                    name,
+                    'value',
+                  ]);
+                  const itemTotal = (itemQuantity || 0) * (itemValue || 0);
+
+                  return (
+                    <div
+                      key={key}
                       style={{
+                        display: 'flex',
+                        alignItems: 'center',
                         width: '100%',
-                        justifyContent: 'start',
+                        justifyContent: 'space-between',
                       }}
                     >
-                      <Form.Item
-                        {...restField}
-                        label="Produto"
-                        name={[name, 'product']}
-                        style={{ width: '450px' }}
-                        rules={[
-                          {
-                            required: true,
-                            message: 'Por favor, selecione um produto',
-                          },
-                        ]}
+                      <Space
+                        style={{
+                          width: '100%',
+                          justifyContent: 'start',
+                        }}
                       >
-                        <Select
-                          showSearch
-                          size="large"
-                          placeholder="Selecione um Produto..."
-                          options={productData?.data.map((product) => ({
-                            label: product.name,
-                            value: product.id,
-                          }))}
-                        />
-                      </Form.Item>
-                      <Form.Item
-                        {...restField}
-                        label="Quantidade"
-                        name={[name, 'quantity']}
-                        rules={[
-                          { required: true, message: 'Informe a quantidade' },
-                        ]}
-                      >
-                        <InputNumber placeholder="Quantidade" />
-                      </Form.Item>
-                      <Form.Item
-                        {...restField}
-                        label="Valor"
-                        name={[name, 'value']}
-                        rules={[{ required: true, message: 'Informe o valor' }]}
-                      >
-                        <InputNumber placeholder="Valor" />
-                      </Form.Item>
-                    </Space>
+                        <Form.Item
+                          {...restField}
+                          label="Produto"
+                          name={[name, 'productId']}
+                          style={{ width: '350px' }}
+                          rules={[
+                            {
+                              required: true,
+                              message: 'Por favor, selecione um produto',
+                            },
+                          ]}
+                        >
+                          <Select
+                            showSearch
+                            size="large"
+                            placeholder="Selecione um Produto..."
+                            options={productData?.data.map((Product) => ({
+                              label: Product.name,
+                              value: Product.id,
+                            }))}
+                          />
+                        </Form.Item>
+                        <Form.Item
+                          {...restField}
+                          label="Quantidade"
+                          name={[name, 'quantity']}
+                          rules={[
+                            { required: true, message: 'Informe a quantidade' },
+                          ]}
+                        >
+                          <InputNumber
+                            decimalSeparator=","
+                            placeholder="Quantidade"
+                          />
+                        </Form.Item>
+                        <Form.Item
+                          {...restField}
+                          label="Valor"
+                          name={[name, 'value']}
+                          rules={[
+                            { required: true, message: 'Informe o valor' },
+                          ]}
+                        >
+                          <InputNumber
+                            decimalSeparator=","
+                            placeholder="Valor"
+                          />
+                        </Form.Item>
 
-                    <Button
-                      danger
-                      style={{ marginTop: '29px' }}
-                      type="primary"
-                      onClick={() => remove(name)}
-                    >
-                      Remover
-                    </Button>
-                  </div>
-                ))}
+                        <Form.Item
+                          label="Valor total"
+                          style={{ width: '80px' }}
+                        >
+                          <Input value={itemTotal} readOnly disabled />
+                        </Form.Item>
+                      </Space>
+
+                      <Button
+                        danger
+                        style={{ marginTop: '29px' }}
+                        type="primary"
+                        onClick={() => remove(name)}
+                      >
+                        Remover
+                      </Button>
+                    </div>
+                  );
+                })}
 
                 <Button type="dashed" onClick={() => add()} block>
                   Adicionar Produto

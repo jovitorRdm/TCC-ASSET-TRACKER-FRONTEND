@@ -69,7 +69,7 @@ export const ServiceDialogForm: React.FC<ServiceDialogFormProps> = ({
 
   const [form] = Form.useForm();
 
-  const { resetFields, setFieldsValue, validateFields, getFieldsValue } = form;
+  const { resetFields, setFieldsValue, validateFields } = form;
 
   const createServiceItemType = useMutation({
     mutationFn: (data: InputServiceItemRequestData) =>
