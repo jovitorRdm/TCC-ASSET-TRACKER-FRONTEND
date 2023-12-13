@@ -1,20 +1,19 @@
 import { GenericStatus } from '@/types/genericStatus';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { EditOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { Button, Modal, Table, Tag, Tooltip } from 'antd';
+import { Button, Modal, Table, Tooltip } from 'antd';
 import { ClientComponentLoader } from '@/components/ClientComponentLoader';
 import { StatusButton } from '@/components/StatusButton';
-import { FiscalProduct } from '@/types/fiscalProduct';
-import { fiscalProductService } from '@/services/fiscalProduct';
-import dayjs from 'dayjs';
+import { EventSalons } from '@/types/eventSalons';
+import { eventSalonsService } from '@/services/eventSalons';
 
-interface FiscalTableProps {
-  fiscalProduct: FiscalProduct[];
-  onEdit: (FiscalProduct: FiscalProduct) => void;
+interface EventTableProps {
+  eventsSalons: EventSalons[];
+  onEdit: (EventSalons: EventSalons) => void;
 }
 
-export const FiscalProductTable: React.FC<FiscalTableProps> = ({
-  fiscalProduct,
+export const EventsSalonsTable: React.FC<EventTableProps> = ({
+  eventsSalons,
   onEdit,
 }) => {
   const queryClient = useQueryClient();
@@ -22,27 +21,9 @@ export const FiscalProductTable: React.FC<FiscalTableProps> = ({
 
   const changeStatus = useMutation({
     mutationFn: (params: any) =>
-      fiscalProductService.changeStatus(params.id, params.status),
-    onSuccess: () => queryClient.invalidateQueries(['fiscalProduct']),
+      eventSalonsService.changeStatus(params.id, params.status),
+    onSuccess: () => queryClient.invalidateQueries(['events']),
   });
-
-  const expandedRowRender = ({ productEntries }: FiscalProduct) => (
-    <div>
-      <strong>Os produtos comprados:</strong>{' '}
-      {productEntries && productEntries.length > 0 ? (
-        productEntries.map((productEntries) => (
-          <Tag
-            style={{ textTransform: 'uppercase', fontWeight: 700 }}
-            key={productEntries.id}
-          >
-            {productEntries.name}
-          </Tag>
-        ))
-      ) : (
-        <p>Nenhum produto encontrado.</p>
-      )}
-    </div>
-  );
 
   const handleChangeStatus = (id: string, status: GenericStatus) => {
     confirm({
@@ -81,36 +62,8 @@ export const FiscalProductTable: React.FC<FiscalTableProps> = ({
         columns={[
           {
             title: 'Nome',
-            dataIndex: 'supplierId',
-            key: 'supplier',
-            align: 'left',
-            render: (_, record) => <div>{record.supplier.name}</div>,
-          },
-
-          {
-            title: 'Data da Emissão',
-            dataIndex: 'issueDate',
-            key: 'issueDate',
-            align: 'left',
-            render: (_, record) => (
-              <div>{dayjs(record.issueDate).format('DD/MM/YYYY')}</div>
-            ),
-          },
-          {
-            title: 'NF-E',
-            dataIndex: 'invoiceNumber',
-            key: 'invoiceNumber',
-            align: 'left',
-          },
-          {
-            title: 'Valor Total da Nota',
-            dataIndex: 'totalAmount',
-            render: (value) =>
-              value.toLocaleString('pt-br', {
-                style: 'currency',
-                currency: 'BRL',
-              }),
-            key: 'totalAmount',
+            dataIndex: 'name',
+            key: 'name',
             align: 'left',
           },
           {
@@ -142,8 +95,16 @@ export const FiscalProductTable: React.FC<FiscalTableProps> = ({
             ),
           },
         ]}
-        dataSource={fiscalProduct}
-        expandable={{ expandedRowRender }}
+        dataSource={eventsSalons}
+        expandable={{
+          expandedRowRender: ({ description }) => (
+            <div style={{ paddingLeft: 8 }}>
+              <span style={{ paddingLeft: '40px' }}>
+                <strong>Descrição:</strong> {`${description}`}
+              </span>
+            </div>
+          ),
+        }}
       />
     </ClientComponentLoader>
   );

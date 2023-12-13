@@ -19,6 +19,15 @@ export const SupplierPersonalInfoStep: React.FC<
 
   const handleSelectChange = (value: string) => {
     setSelectedOption(value);
+    handleDocumentChange(value);
+  };
+
+  const handleDocumentChange = (value: string) => {
+    if (documentValue?.length > 14 && value === 'cpf') {
+      setSelectedOption('cpf');
+    } else if (documentValue?.length < 14 && value === 'cnpj') {
+      setSelectedOption('cnpj');
+    }
   };
 
   return (
@@ -69,16 +78,18 @@ export const SupplierPersonalInfoStep: React.FC<
           justifyContent: 'left',
         }}
       >
-        <Select
-          placeholder="Selecione uma opção"
-          size="large"
-          style={{ width: '200px', alignItems: '-moz-initial' }}
-          options={[
-            { value: 'cpf', label: 'CPF' },
-            { value: 'cnpj', label: 'CNPJ' },
-          ]}
-          onChange={handleSelectChange}
-        />
+        <Form.Item required label="Tipo de Documento">
+          <Select
+            placeholder="Selecione uma opção"
+            size="large"
+            style={{ width: '200px', alignItems: '-moz-initial' }}
+            options={[
+              { value: 'cpf', label: 'CPF' },
+              { value: 'cnpj', label: 'CNPJ' },
+            ]}
+            onChange={handleSelectChange}
+          />
+        </Form.Item>
         <Form.Item
           required
           label="Documento"

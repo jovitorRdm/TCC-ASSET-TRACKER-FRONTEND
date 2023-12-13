@@ -14,6 +14,7 @@ import {
   ContactsOutlined,
   InsertRowBelowOutlined,
   ShoppingCartOutlined,
+  FileTextOutlined,
 } from '@ant-design/icons';
 import Sider from 'antd/es/layout/Sider';
 import { usePathname, useRouter } from 'next/navigation';
@@ -48,6 +49,8 @@ const items: MenuItem[] = [
   getItem('Serviços', '/serviceItem', <CoffeeOutlined />),
   getItem('Produtos', '/product', <InsertRowBelowOutlined />),
   getItem('Compras', '/fiscalProduct', <ShoppingCartOutlined />),
+  getItem('Orçamentos', '/budget', <FileTextOutlined />),
+  // getItem('Locais de eventos', '/eventSalons', <FileTextOutlined />),
 ];
 
 const SideBar: React.FC = () => {

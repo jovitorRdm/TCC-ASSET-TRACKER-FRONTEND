@@ -107,6 +107,7 @@ export const AssignmentsTable: React.FC<AssignmentTableProps> = ({
             paymentValue,
             accountRequirement,
             accountType,
+            peopleServed,
           }) => (
             <div style={{ paddingLeft: 8 }}>
               <span>
@@ -123,6 +124,9 @@ export const AssignmentsTable: React.FC<AssignmentTableProps> = ({
                       {` R$ ${getAccountTypeProps(accountType).translated}`}
                     </span>
                   )}
+                  <br />
+                  <strong>Capacidade de Atendimento:</strong>
+                  {` ${peopleServed}`}
                 </div>
               </span>
             </div>

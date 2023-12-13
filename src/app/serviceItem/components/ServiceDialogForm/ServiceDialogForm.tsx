@@ -4,10 +4,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Button,
   Cascader,
+  Col,
   Form,
   Input,
   InputNumber,
   Modal,
+  Row,
   Select,
 } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
@@ -138,9 +140,8 @@ export const ServiceDialogForm: React.FC<ServiceDialogFormProps> = ({
       setFieldsValue({
         name: serviceItemToEdit.name,
         description: serviceItemToEdit.description,
-        assignments:
-          serviceItemToEdit.assignments.map((assignment) => assignment.id) ||
-          [],
+        assignmentId: serviceItemToEdit.assignmentId,
+        saleValue: serviceItemToEdit.saleValue,
       });
     }
   }, [serviceItemToEdit]);
@@ -195,37 +196,6 @@ export const ServiceDialogForm: React.FC<ServiceDialogFormProps> = ({
         </Form.Item>
         <Form.Item
           required
-          label="Atribuição por Serviço"
-          name="assignments"
-          rules={[{ required: true, message: '' }]}
-        >
-          <Select
-            showSearch
-            mode="multiple"
-            size="large"
-            optionFilterProp="children"
-            placeholder="Selecione uma atribuição..."
-            options={data?.data.map((assignments) => ({
-              label: assignments.name,
-              value: assignments.id,
-            }))}
-            filterOption={(input, option) =>
-              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-            }
-            onChange={(selectedAssignments) =>
-              setFieldsValue({ assignments: selectedAssignments })
-            }
-          >
-            {data?.data.map((assignment) => (
-              <Select.Option key={assignment.id} value={assignment.id}>
-                {assignment.name}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-
-        <Form.Item
-          required
           label="Descrição"
           name="description"
           rules={[
@@ -241,6 +211,63 @@ export const ServiceDialogForm: React.FC<ServiceDialogFormProps> = ({
             autoSize={{ minRows: 2, maxRows: 5 }}
           />
         </Form.Item>
+        <Row justify="space-between">
+          <Col>
+            <Form.Item
+              required
+              label="Atribuição por Serviço"
+              name="assignmentId"
+              style={{ width: '250px' }}
+              rules={[{ required: true, message: 'Selecione uma atribuição' }]}
+            >
+              <Select
+                showSearch
+                size="large"
+                optionFilterProp="children"
+                placeholder="Selecione uma atribuição..."
+                options={data?.data.map((assignments) => ({
+                  label: assignments.name,
+                  value: assignments.id,
+                }))}
+                filterOption={(input, option) =>
+                  (option?.label ?? '')
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                onChange={(selectedAssignment) =>
+                  setFieldsValue({ assignments: selectedAssignment })
+                }
+              >
+                {data?.data.map((assignment) => (
+                  <Select.Option key={assignment.id} value={assignment.id}>
+                    {assignment.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+
+          <Col>
+            <Form.Item
+              label="Valor do Serviço"
+              required
+              name="saleValue"
+              style={{ width: '200px' }}
+              rules={[
+                { required: true, message: '' },
+                { type: 'number', min: 1, message: ErrorMessages.MSGE10 },
+              ]}
+            >
+              <InputNumber
+                style={{ width: '100%' }}
+                addonAfter="R$"
+                placeholder="R$ 0.00"
+                decimalSeparator=","
+                step={1}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
       </Form>
     </StyledModal>
   );

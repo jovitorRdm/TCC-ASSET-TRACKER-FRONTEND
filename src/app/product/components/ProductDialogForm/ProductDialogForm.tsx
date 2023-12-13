@@ -2,10 +2,11 @@
 import { productService } from '@/services/product';
 import { InputProductRequestData, Product } from '@/types';
 import { ErrorMessages } from '@/types/messages';
+import { ProductType } from '@/types/productType';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Button, Form, Input, InputNumber, Modal, Select } from 'antd';
+import { Button, Form, Input, InputNumber, Modal, Select, Radio } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Swal from 'sweetalert2';
 
@@ -56,8 +57,11 @@ export const ProductDialogForm: React.FC<ProductDialogFormProps> = ({
   onClose,
 }) => {
   const queryClient = useQueryClient();
+  const [productType, setProductType] = useState<ProductType>();
+  const [calculatedValue, setCalculatedValue] = useState<number>();
 
   const [form] = Form.useForm();
+  const { Group: RadioGroup } = Radio;
 
   const { resetFields, setFieldsValue, validateFields, setFieldValue } = form;
 
@@ -67,6 +71,15 @@ export const ProductDialogForm: React.FC<ProductDialogFormProps> = ({
       queryClient.invalidateQueries(['product']);
     },
   });
+
+  const calculateFinalValue = (percentage: number, value: number) => {
+    const finalValue = value + (value * percentage) / 100;
+    setCalculatedValue(finalValue);
+  };
+
+  const handleProductTypeChange = (e: any) => {
+    setProductType(e.target.value);
+  };
 
   const editProduct = useMutation({
     mutationFn: (data: Product) => productService.update(data),
@@ -120,7 +133,16 @@ export const ProductDialogForm: React.FC<ProductDialogFormProps> = ({
         consumptionPerPerson: productToEdit.consumptionPerPerson,
         value: productToEdit.value,
         quantity: productToEdit.quantity,
+        productType: productToEdit.productType,
+        numberDay: productToEdit.numberDay,
+        percentage: productToEdit.percentage,
+        SaleValue: productToEdit.SaleValue,
       });
+      setProductType(productToEdit.productType);
+      calculateFinalValue(
+        productToEdit.percentage as number,
+        productToEdit.value
+      );
     }
   }, [productToEdit]);
 
@@ -195,7 +217,6 @@ export const ProductDialogForm: React.FC<ProductDialogFormProps> = ({
             autoSize={{ minRows: 2, maxRows: 5 }}
           />
         </Form.Item>
-
         <div
           style={{
             paddingTop: '16px',
@@ -238,10 +259,121 @@ export const ProductDialogForm: React.FC<ProductDialogFormProps> = ({
             <InputNumber
               style={{ width: '100%' }}
               placeholder="valor pago em Reais"
+              decimalSeparator=","
               step={1.0}
             />
           </Form.Item>
         </div>
+        <Form.Item label="Tipo de Produto" required name={'productType'}>
+          <RadioGroup
+            onChange={handleProductTypeChange}
+            value={productType}
+            style={{
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'row',
+            }}
+            options={[
+              { value: 'Consumable', label: 'Consumível' },
+              { value: 'Rental', label: 'Aluguel' },
+            ]}
+          />
+        </Form.Item>
+        {productType === 'Rental' && (
+          <div
+            style={{
+              display: 'flex',
+              gap: '16px',
+              width: '100%',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Form.Item
+              label="Quantidade de Dias"
+              name="numberDay"
+              rules={[
+                {
+                  required: true,
+                  message: 'Por favor, insira a quantidade de dias.',
+                },
+              ]}
+            >
+              <InputNumber
+                decimalSeparator=","
+                style={{ width: '160px' }}
+                min={1}
+              />
+            </Form.Item>
+            <Form.Item
+              label="Valor do aluguel"
+              name="SaleValue"
+              rules={[
+                {
+                  required: true,
+                  message: 'Por favor, insira o valor por dia.',
+                },
+              ]}
+            >
+              <InputNumber
+                prefix="R$"
+                decimalSeparator=","
+                style={{ width: '100%' }}
+              />
+            </Form.Item>
+          </div>
+        )}
+
+        {productType === 'Consumable' && (
+          <div
+            style={{
+              display: 'flex',
+              gap: '16px',
+              width: '100%',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Form.Item
+              label="Porcentagem de Lucro"
+              name="percentage"
+              style={{ width: '160px' }}
+              rules={[
+                {
+                  required: true,
+                  message: 'Por favor, insira a porcentagem.',
+                },
+              ]}
+            >
+              <InputNumber
+                onChange={(value) => {
+                  form.setFieldValue('percentage', value);
+                  calculateFinalValue(
+                    value as number,
+                    form.getFieldValue('value')
+                  );
+                }}
+                decimalSeparator=","
+                prefix="%"
+              />
+            </Form.Item>
+            {/* <Form.Item label="Valor do produto" name="value">
+              <InputNumber
+                decimalSeparator=","
+                formatter={(value) => `R$ ${value}`}
+                style={{ width: '100px' }}
+                min={1}
+                disabled
+              />
+            </Form.Item>
+            <Form.Item label="Valor + Lucro">
+              <InputNumber
+                value={calculatedValue}
+                disabled
+                style={{ width: '160px' }}
+                formatter={(value) => `R$ ${value}`}
+              />
+            </Form.Item> */}
+          </div>
+        )}
       </Form>
     </StyledModal>
   );

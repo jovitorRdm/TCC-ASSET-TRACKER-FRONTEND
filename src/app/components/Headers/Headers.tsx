@@ -8,15 +8,15 @@ const headerStyle: React.CSSProperties = {
   margin: '0',
   padding: '0px 0px 0px 5px',
   color: '#fff',
-  backgroundColor: '#D6A07E',
+  backgroundColor: '#f0ccb7',
   display: 'flex',
-  height: '110px',
+  height: '70px',
 };
 
 const h1Style: React.CSSProperties = {
   fontSize: '30px',
   fontWeight: 'bold',
-  padding: ' 25px 0px 0px 0px',
+  padding: ' 5px 0px 0px 0px',
   textAlign: 'center',
   letterSpacing: '2px',
   margin: 0,
@@ -24,13 +24,13 @@ const h1Style: React.CSSProperties = {
 };
 
 const ImageStyle: React.CSSProperties = {
-  width: '115px',
+  width: '72px',
 };
 
 const Headers: React.FC = () => {
   return (
     <Header style={headerStyle}>
-      <Image src="\img\logo.png" style={ImageStyle} />
+      <Image src="\img\teste02.png" style={ImageStyle} />
       <h3 style={h1Style}>
         ASSET<span style={{ color: 'black' }}>TRACKER</span>
       </h3>

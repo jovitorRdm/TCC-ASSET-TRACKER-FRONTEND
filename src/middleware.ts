@@ -14,6 +14,8 @@ export const config = {
     `/home`,
     `/product`,
     `/fiscalProduct`,
+    `/budget`,
+    `/eventSalons`,
   ],
 };
 
@@ -28,7 +30,7 @@ export function middleware(req: NextRequest) {
 
   const { accountType } = decode(token.value) as { accountType: AccountType };
 
-  const authorizedRoutes = getAuthorizedRoutesByRoles(accountType );
+  const authorizedRoutes = getAuthorizedRoutesByRoles(accountType);
 
   if (!authorizedRoutes.includes(pathname)) {
     const res = NextResponse.redirect(new URL('/', req.url));

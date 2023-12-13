@@ -15,6 +15,8 @@ import {
   Radio,
   RadioChangeEvent,
   Switch,
+  Col,
+  Row,
 } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import { useEffect, useState } from 'react';
@@ -140,6 +142,7 @@ export const AssignmentDialogForm: React.FC<AssignmentDialogFormProps> = ({
         paymentValue: assignmentToEdit.paymentValue,
         accountType: assignmentToEdit.accountType,
         accountRequirement: assignmentToEdit.accountRequirement,
+        peopleServed: assignmentToEdit.peopleServed,
       });
       setShowSelect(assignmentToEdit.accountRequirement);
     }
@@ -254,22 +257,51 @@ export const AssignmentDialogForm: React.FC<AssignmentDialogFormProps> = ({
               style={{ width: '100%' }}
               addonAfter="R$"
               placeholder="valor pago em Reais"
-              step={0.01}
+              decimalSeparator=","
+              step={0.1}
             />
           </Form.Item>
         </div>
 
-        <Form.Item required label="Precisa de Conta?" name="accountRequirement">
-          <Switch
-            checkedChildren="Sim"
-            checked={showSelect}
-            unCheckedChildren="Não"
-            onChange={(value) => {
-              setFieldValue('accountRequirement', value);
-              setShowSelect(value);
-            }}
-          />
-        </Form.Item>
+        <Row justify={'space-between'}>
+          <Col>
+            <Form.Item
+              required
+              label="Precisa de Conta?"
+              name="accountRequirement"
+            >
+              <Switch
+                checkedChildren="Sim"
+                checked={showSelect}
+                unCheckedChildren="Não"
+                onChange={(value) => {
+                  setFieldValue('accountRequirement', value);
+                  setShowSelect(value);
+                }}
+              />
+            </Form.Item>
+          </Col>
+
+          <Col>
+            <Form.Item
+              required
+              label="Capacidade de Atendimento"
+              name="peopleServed"
+              style={{ width: '200px' }}
+              rules={[
+                { required: true, message: '' },
+                { type: 'number', min: 1, message: ErrorMessages.MSGE10 },
+              ]}
+            >
+              <InputNumber
+                placeholder="Quantidade de Pessoas"
+                decimalSeparator=","
+                addonAfter="Pessoas"
+                step={1}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
 
         {showSelect ? (
           <Form.Item label="Tipo de Conta" name={'accountType'}>

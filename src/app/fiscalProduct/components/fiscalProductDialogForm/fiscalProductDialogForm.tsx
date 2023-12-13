@@ -79,7 +79,8 @@ export const FiscalProductDialogForm: React.FC<
   const [totalAmount, setTotalAmount] = useState(
     fiscalProductToEdit?.totalAmount || 0
   );
-  const { resetFields, setFieldsValue, setFieldValue, validateFields } = form;
+  const { resetFields, setFieldsValue, validateFields } = form;
+
   const productEntries: ProductEntries[] =
     Form.useWatch('productEntries', form) ?? [];
 
@@ -135,12 +136,12 @@ export const FiscalProductDialogForm: React.FC<
   const handleSubmit = () => {
     validateFields()
       .then((data) => {
-        console.log(data);
         if (fiscalProductToEdit) {
           editFiscalProduct
             .mutateAsync({
               ...fiscalProductToEdit,
               ...data,
+              productEntries,
               totalAmount,
             })
             .then(() => {
@@ -169,9 +170,10 @@ export const FiscalProductDialogForm: React.FC<
         invoiceNumber: fiscalProductToEdit.invoiceNumber,
         totalValue: fiscalProductToEdit.totalAmount,
         issueDate: dayjs(fiscalProductToEdit.issueDate),
+        productEntries: fiscalProductToEdit.productEntries,
       });
     }
-  }, [fiscalProductToEdit]);
+  }, [fiscalProductToEdit, setFieldsValue]);
 
   return (
     <StyledModal
@@ -254,6 +256,7 @@ export const FiscalProductDialogForm: React.FC<
               <Input
                 style={{ width: '120px' }}
                 value={totalAmount}
+                prefix="R$"
                 readOnly
                 disabled
               />
@@ -351,11 +354,14 @@ export const FiscalProductDialogForm: React.FC<
                           />
                         </Form.Item>
 
-                        <Form.Item
-                          label="Valor total"
-                          style={{ width: '80px' }}
-                        >
-                          <Input value={itemTotal} readOnly disabled />
+                        <Form.Item label="sub total" style={{ width: '120px' }}>
+                          <InputNumber
+                            value={itemTotal}
+                            prefix="R$"
+                            decimalSeparator=","
+                            readOnly
+                            disabled
+                          />
                         </Form.Item>
                       </Space>
 

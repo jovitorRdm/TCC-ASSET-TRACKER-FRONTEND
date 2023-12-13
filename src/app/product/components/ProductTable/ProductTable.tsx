@@ -51,6 +51,11 @@ export const ProductTable: React.FC<ProductProp> = ({ product, onEdit }) => {
     });
   };
 
+  const productTypeOptions = [
+    { value: 'Consumable', label: 'Consumível' },
+    { value: 'Rental', label: 'Aluguel' },
+  ];
+
   return (
     <ClientComponentLoader>
       <Table
@@ -65,14 +70,31 @@ export const ProductTable: React.FC<ProductProp> = ({ product, onEdit }) => {
             align: 'left',
           },
           {
+            title: 'Tipo de Produto',
+            dataIndex: 'productType',
+            key: 'quantity',
+            align: 'left',
+            width: '350px',
+            render: (value) => {
+              const option = productTypeOptions.find(
+                (opt) => opt.value === value
+              );
+              return option ? option.label : value;
+            },
+          },
+          {
             title: 'Quantidade',
             dataIndex: 'quantity',
             key: 'quantity',
-            align: 'left',
+            align: 'right',
+            render: (value) => {
+              return value.toLocaleString('pt-BR');
+            },
           },
           {
             dataIndex: 'actions',
-            width: 200,
+            width: 800,
+            align: 'right',
             key: 'actions',
             render: (_, record) => (
               <>
